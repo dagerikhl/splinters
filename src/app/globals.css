@@ -86,6 +86,12 @@ body {
 }
 
 body {
+  display: grid;
+  grid-template-areas:
+    "header"
+    "main";
+  grid-template-columns: auto;
+  grid-template-rows: 60px calc(100vh - 60px);
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -93,6 +99,14 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+header {
+  grid-area: header;
+}
+
+main {
+  grid-area: main;
 }
 
 a {
