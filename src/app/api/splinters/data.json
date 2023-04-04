@@ -1,0 +1,55 @@
+[
+  {
+    "id": "change",
+    "name": "Change",
+    "type": "dawnshard",
+    "state": "alive",
+    "vessel": "rysn"
+  },
+  {
+    "id": "life",
+    "name": "Life",
+    "type": "dawnshard",
+    "slivers": ["hoid"]
+  },
+  {
+    "id": "adonalsium",
+    "name": "Adonalsium",
+    "type": "omegashard",
+    "state": "splintered",
+    "splinters": [
+      {
+        "id": "ruin",
+        "name": "Ruin",
+        "type": "shard",
+        "state": "combined",
+        "combinations": {
+          "harmony": ["preservation", "ruin"]
+        }
+      },
+      {
+        "id": "preservation",
+        "name": "Preservation",
+        "type": "shard",
+        "state": "combined",
+        "combinations": {
+          "harmony": ["preservation", "ruin"]
+        },
+        "slivers": ["kelsier", "the-lord-ruler"]
+      },
+      {
+        "id": "honor",
+        "name": "Honor",
+        "type": "shard",
+        "state": "splintered"
+      },
+      {
+        "id": "cultivation",
+        "name": "Cultivation",
+        "type": "shard",
+        "state": "alive",
+        "vessel": "koravellium-avast"
+      }
+    ]
+  }
+]
