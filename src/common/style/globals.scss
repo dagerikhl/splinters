@@ -1,0 +1,89 @@
+:root {
+  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+
+  --space-xx-small: 0.125rem;
+  --space-x-small: 0.25rem;
+  --space-small: 0.5rem;
+  --space-medium: 1rem;
+  --space-large: 1.5rem;
+  --space-x-large: 2rem;
+  --space-xx-large: 3rem;
+
+  --color-pri: #222222;
+  --color-sec: #000000;
+  --color-ter: #ffffff;
+  --color-accent: #0075c7;
+
+  --bkg-color-pri: #ebf0f3;
+  --bkg-color-sec: #dfe4e7;
+  --bkg-color-ter: #3b5162;
+
+  --border-color-pri: rgba(0, 0, 0, 25%);
+  --border-color-sec: rgba(0, 0, 0, 35%);
+  --border-color-ter: rgba(0, 0, 0, 50%);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-pri: #e8e8e8;
+    --color-sec: #ffffff;
+    --color-ter: #e1e6ea;
+    --color-accent: #77b4e3;
+
+    --bkg-color-pri: #1f1f1f;
+    --bkg-color-sec: #3a3d3f;
+    --bkg-color-ter: #153d57;
+
+    --border-color-pri: rgba(50, 50, 50, 25%);
+    --border-color-sec: rgba(50, 50, 50, 35%);
+    --border-color-ter: rgba(50, 50, 50, 50%);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  min-width: 600px;
+  max-width: 100vw;
+  overflow-x: auto;
+}
+
+body {
+  display: grid;
+  grid-template-areas:
+    "header"
+    "main";
+  grid-template-columns: auto;
+  grid-template-rows: 60px calc(100vh - 60px - 18px);
+  color: var(--color-pri);
+  background: var(--bkg-color-pri);
+}
+
+header {
+  grid-area: header;
+}
+
+main {
+  grid-area: main;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}

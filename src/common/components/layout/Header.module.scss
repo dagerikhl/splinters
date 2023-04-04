@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-x-small);
+  padding: 0 var(--space-small);
+  color: var(--color-sec);
+  background: var(--bkg-color-sec);
+  box-shadow: 0 1px 4px 2px var(--border-color-pri);
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-small);
+  margin-left: auto;
+}
