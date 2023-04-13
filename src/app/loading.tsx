@@ -1,4 +1,5 @@
-// TODO Make a better loading component
+import { LoadingIndicator } from "@/common/components/LoadingIndicator/LoadingIndicator";
+
 export default function Loading() {
-  return <div>Loading...</div>;
+  return <LoadingIndicator />;
 }

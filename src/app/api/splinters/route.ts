@@ -10,7 +10,7 @@ const sleep = (time: number) =>
 
 export async function GET() {
   // TODO Remove
-  await sleep(3000);
+  await sleep(100);
 
   const data = await import("./data.json");
 

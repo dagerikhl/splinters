@@ -6,7 +6,7 @@ export const Canvas = () => {
   // TODO Impl. some way to get and alter CMS content, consider state vs. (initial) data
   const { data } = useSplintersApi();
 
-  console.log(data);
+  console.log("Canvas::data:", data);
 
   return (
     <RTFCanvas>
