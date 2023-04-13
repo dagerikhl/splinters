@@ -1,4 +1,5 @@
 import { Header } from "@/common/components/layout/Header";
+import { AppProviders } from "@/features/app/components/AppProviders";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
 import "@/common/style/globals.scss";
@@ -18,9 +19,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
+        <AppProviders>
+          <Header />
 
-        <main>{children}</main>
+          <main>{children}</main>
+        </AppProviders>
       </body>
     </html>
   );
