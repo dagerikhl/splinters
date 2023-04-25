@@ -2,11 +2,9 @@ import { ThreeElements, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import THREE from "three";
 
-// TODO Delete when not used as example
+export type ShardProps = ThreeElements["mesh"];
 
-export type BoxProps = ThreeElements["mesh"];
-
-export const Box = (props: BoxProps) => {
+export const Shard = (props: ShardProps) => {
   const mesh = useRef<THREE.Mesh>(null!);
 
   const [hovered, setHover] = useState(false);
@@ -23,7 +21,7 @@ export const Box = (props: BoxProps) => {
       onPointerOver={() => setHover(true)}
       onPointerOut={() => setHover(false)}
     >
-      <boxGeometry args={[1, 1, 1]} />
+      <octahedronGeometry />
       <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
     </mesh>
   );

@@ -12,7 +12,7 @@ export async function GET() {
   // TODO Remove
   await sleep(100);
 
-  const data = await import("./data.json");
+  const data = (await import("./data.json")).default;
 
   return NextResponse.json(data);
 }
