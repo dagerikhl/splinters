@@ -8,6 +8,7 @@ export const Canvas = () => {
   const { data } = useSplintersApi();
 
   const adonalsium =
+    // TODO Why do I have to use this format? This shouldn't be necessary (?. should be sufficient)
     data?.splinters && data.splinters.find(({ id }) => id === "adonalsium");
 
   // TODO Remove
@@ -19,10 +20,14 @@ export const Canvas = () => {
       <pointLight />
 
       {/* TODO Replace with Adonalsium component when made */}
-      {adonalsium && <Shard position={[0, 2, 0]} />}
+      {adonalsium && <Shard splinter={adonalsium} position={[0, 2, 0]} />}
 
-      {adonalsium?.splinters?.map((shard, i) => (
-        <Shard key={shard.id} position={[-3 + i * 0.4, -(i % 2) * 1.5, 0]} />
+      {adonalsium?.splinters?.map((splinter, i) => (
+        <Shard
+          key={splinter.id}
+          splinter={splinter}
+          position={[-3 + i * 0.4, -(i % 2) * 1.5, 0]}
+        />
       ))}
     </RTFCanvas>
   );
