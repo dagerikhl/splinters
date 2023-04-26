@@ -37,6 +37,7 @@
     "three": "0.151.3"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "4.29.5",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "eslint-config-prettier": "8.8.0",

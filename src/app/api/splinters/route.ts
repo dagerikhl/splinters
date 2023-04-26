@@ -1,3 +1,4 @@
+import { data } from "@/app/api/splinters/data";
 import { NextResponse } from "next/server";
 
 // TODO Remove
@@ -10,9 +11,7 @@ const sleep = (time: number) =>
 
 export async function GET() {
   // TODO Remove
-  await sleep(100);
-
-  const data = (await import("./data.json")).default;
+  await sleep(300);
 
   return NextResponse.json(data);
 }

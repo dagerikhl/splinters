@@ -1,6 +1,4 @@
-"use client";
-
-import { QueryProvider } from "@/features/app/providers/QueryProvider/QueryProvider";
+import { QueryProvider } from "@/features/api/providers/QueryProvider/QueryProvider";
 import { ReactNode } from "react";
 
 export interface AppProvidersProps {
