@@ -1,12 +1,13 @@
+import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { createContext, Dispatch, SetStateAction } from "react";
 
 export interface SplintersStore {
-  selectedId?: string;
-  onSelectEntity: Dispatch<SetStateAction<string | undefined>>;
+  selectedSplinter?: ISplinterTarget;
+  onSelectSplinter: Dispatch<SetStateAction<ISplinterTarget | undefined>>;
 }
 
 const SPLINTERS_STORE_DEFAULT_VALUE: SplintersStore = {
-  onSelectEntity: () => {},
+  onSelectSplinter: () => {},
 };
 
 export const SplintersContext = createContext(SPLINTERS_STORE_DEFAULT_VALUE);

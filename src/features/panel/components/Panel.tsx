@@ -1,38 +1,39 @@
 "use client";
 
-import { useSplintersApi } from "@/features/cms/hooks/useSplintersApi";
+import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
+import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
+import { formatSplinterName } from "@/features/splinters/utils/formatting";
 import styles from "./Panel.module.scss";
 
 export const Panel = () => {
-  const { data } = useSplintersApi();
+  const { data } = useShardsApi();
 
-  const { selectedId } = useSplintersContext();
+  const { selectedSplinter } = useSplintersContext();
 
-  const adonalsium =
-    // TODO Why do I have to use this format? This shouldn't be necessary (?. should be sufficient)
-    data?.splinters && data.splinters.find(({ id }) => id === "adonalsium");
-  const selectedEntity =
-    // TODO Why do I have to use this format? This shouldn't be necessary (?. should be sufficient)
-    adonalsium?.splinters &&
-    adonalsium.splinters.find(({ id }) => id === selectedId);
+  const selectedShard =
+    selectedSplinter &&
+    data?.shards.find(
+      ({ id }) =>
+        selectedSplinter.category === SplinterCategory.Shard &&
+        selectedSplinter.id === id
+    );
 
   // TODO Show more interesting info
   return (
     <aside className={styles.container}>
-      {selectedId ? (
+      {selectedSplinter && (
         <>
-          <h1>{selectedEntity?.name ?? selectedId}</h1>
+          <h1>{formatSplinterName(selectedShard ?? selectedSplinter)}</h1>
 
-          {selectedEntity && (
+          {selectedShard && (
             <pre>
-              <code>{JSON.stringify(selectedEntity, null, 2)}</code>
+              <code>{JSON.stringify(selectedShard, null, 2)}</code>
             </pre>
           )}
         </>
-      ) : (
-        <p>No Shard selected.</p>
       )}
+      {!selectedSplinter && <p>No Shard selected.</p>}
     </aside>
   );
 };

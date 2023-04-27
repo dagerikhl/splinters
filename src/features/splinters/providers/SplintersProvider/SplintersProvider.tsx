@@ -1,4 +1,5 @@
 import { SplintersContext } from "@/features/splinters/providers/SplintersProvider/SplintersContext";
+import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { ReactNode, useState } from "react";
 
 export interface SplintersProviderProps {
@@ -6,11 +7,13 @@ export interface SplintersProviderProps {
 }
 
 export const SplintersProvider = ({ children }: SplintersProviderProps) => {
-  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [selectedSplinter, setSelectedSplinter] = useState<
+    ISplinterTarget | undefined
+  >();
 
   return (
     <SplintersContext.Provider
-      value={{ selectedId, onSelectEntity: setSelectedId }}
+      value={{ selectedSplinter, onSelectSplinter: setSelectedSplinter }}
     >
       {children}
     </SplintersContext.Provider>

@@ -1,19 +1,20 @@
 "use client";
 
-import { Splinter } from "@/features/cms/types/Splinter";
+import { IShard } from "@/features/cms/shards/types/IShard";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
+import { getSplinterTarget } from "@/features/splinters/utils/targets";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import THREE from "three";
 
 interface OwnProps {
-  splinter: Splinter;
+  shard: IShard;
 }
 
 export type ShardProps = OwnProps & ThreeElements["mesh"];
 
-export const Shard = ({ splinter, ...rest }: ShardProps) => {
-  const { onSelectEntity } = useSplintersContext();
+export const Shard = ({ shard, ...rest }: ShardProps) => {
+  const { onSelectSplinter } = useSplintersContext();
 
   const mesh = useRef<THREE.Mesh>(null!);
 
@@ -24,7 +25,7 @@ export const Shard = ({ splinter, ...rest }: ShardProps) => {
 
   const handleClick = () => {
     setActive(!active);
-    onSelectEntity(active ? undefined : splinter.id);
+    onSelectSplinter(active ? undefined : getSplinterTarget(shard));
   };
 
   return (

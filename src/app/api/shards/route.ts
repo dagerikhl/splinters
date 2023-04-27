@@ -1,9 +1,9 @@
-import { data } from "@/app/api/splinters/data";
+import { data } from "@/app/api/shards/data";
 import { NextResponse } from "next/server";
 
 // TODO Remove
 const sleep = (time: number) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
     }, time);
