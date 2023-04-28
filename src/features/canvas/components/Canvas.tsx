@@ -1,8 +1,12 @@
 "use client";
 
-import { Shard } from "@/features/canvas/components/Shard";
+import { Button } from "@/common/components/Button";
+import { Adonalsium } from "@/features/canvas/components/Adonalsium";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
+import { CameraControls, Stars } from "@react-three/drei";
 import { Canvas as RTFCanvas } from "@react-three/fiber";
+import { useRef } from "react";
+import styles from "./Canvas.module.scss";
 
 export const Canvas = () => {
   const { data } = useShardsApi();
@@ -12,29 +16,53 @@ export const Canvas = () => {
   // TODO Remove
   console.log("Canvas::data:", { data, adonalsium });
 
+  const cameraControlsRef = useRef<CameraControls>(null!);
+
+  const handleResetCamera = () => {
+    cameraControlsRef.current?.reset(true);
+  };
+
   return (
-    <RTFCanvas>
-      <ambientLight />
-      <pointLight />
+    <div className={styles.container}>
+      <RTFCanvas camera={{ position: [0, 2, 5], fov: 60 }}>
+        <ambientLight intensity={0.4} />
+        <pointLight intensity={0.7} position={[1000, 1000, 1000]} />
+        <pointLight intensity={0.7} position={[-1000, 1000, -1000]} />
 
-      {/* TODO Replace with Adonalsium component when made */}
-      {adonalsium && <Shard shard={adonalsium} position={[0, 2, 0]} />}
+        <Stars
+          radius={100}
+          depth={50}
+          count={2000}
+          factor={4}
+          saturation={0}
+          fade
+          speed={0.5}
+        />
 
-      {adonalsium?.splitsInto?.map((id, i) => {
-        const shard = data?.shards.find((shard) => shard.id === id);
+        <CameraControls ref={cameraControlsRef} enabled minDistance={0} />
 
-        if (!shard) {
-          return null;
-        }
+        {adonalsium && <Adonalsium adonalsium={adonalsium} />}
 
-        return (
-          <Shard
-            key={id}
-            shard={shard}
-            position={[-3 + i * 0.4, -(i % 2) * 1.5, 0]}
-          />
-        );
-      })}
-    </RTFCanvas>
+        {/*{adonalsium?.splitsInto?.map((id, i) => {*/}
+        {/*  const shard = data?.shards.find((shard) => shard.id === id);*/}
+
+        {/*  if (!shard) {*/}
+        {/*    return null;*/}
+        {/*  }*/}
+
+        {/*  return (*/}
+        {/*    <Shard*/}
+        {/*      key={id}*/}
+        {/*      shard={shard}*/}
+        {/*      position={[-3 + i * 0.4, -(i % 2) * 1.5, 0]}*/}
+        {/*    />*/}
+        {/*  );*/}
+        {/*})}*/}
+      </RTFCanvas>
+
+      <div className={styles.controls}>
+        <Button onClick={handleResetCamera}>Reset camera</Button>
+      </div>
+    </div>
   );
 };

@@ -1,0 +1,14 @@
+.container {
+  position: relative;
+}
+
+.controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-small);
+  margin: var(--space-small);
+}

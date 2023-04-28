@@ -2,43 +2,75 @@
 
 import { IShard } from "@/features/cms/shards/types/IShard";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
-import { getSplinterTarget } from "@/features/splinters/utils/targets";
+import {
+  getSplinterTarget,
+  isSameSplinter,
+} from "@/features/splinters/utils/targets";
 import { ThreeElements, useFrame } from "@react-three/fiber";
+import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import { useRef, useState } from "react";
 import THREE from "three";
 
 interface OwnProps {
   shard: IShard;
+  baseScale?: number;
 }
 
 export type ShardProps = OwnProps & ThreeElements["mesh"];
 
-export const Shard = ({ shard, ...rest }: ShardProps) => {
-  const { onSelectSplinter } = useSplintersContext();
+export const Shard = ({
+  shard,
+  baseScale = 1,
+  scale,
+  onClick,
+  onPointerOver,
+  onPointerOut,
+  children,
+  ...rest
+}: ShardProps) => {
+  const { selectedSplinter, onSelectSplinter } = useSplintersContext();
+
+  const isActive = isSameSplinter(selectedSplinter, shard);
 
   const mesh = useRef<THREE.Mesh>(null!);
 
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useFrame((state, delta) => (mesh.current.rotation.y += delta));
 
-  const handleClick = () => {
-    setActive(!active);
-    onSelectSplinter(active ? undefined : getSplinterTarget(shard));
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
+
+    onClick?.(event);
+  };
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+    setIsHovered(true);
+
+    onPointerOver?.(event);
+  };
+
+  const handlePointerOut = (event: ThreeEvent<PointerEvent>) => {
+    setIsHovered(false);
+
+    onPointerOut?.(event);
   };
 
   return (
     <mesh
-      {...rest}
       ref={mesh}
-      scale={active ? 0.6 : 0.3}
+      scale={scale ?? baseScale * (isActive ? 1.5 : 1)}
       onClick={handleClick}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      {...rest}
     >
-      <octahedronGeometry />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
+      {children ?? (
+        <>
+          <boxGeometry />
+          <meshStandardMaterial color={isHovered ? "hotpink" : "orange"} />
+        </>
+      )}
     </mesh>
   );
 };

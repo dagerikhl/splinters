@@ -1,9 +1,9 @@
 "use client";
 
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
-import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { formatSplinterName } from "@/features/splinters/utils/formatting";
+import { isSameSplinter } from "@/features/splinters/utils/targets";
 import styles from "./Panel.module.scss";
 
 export const Panel = () => {
@@ -11,13 +11,9 @@ export const Panel = () => {
 
   const { selectedSplinter } = useSplintersContext();
 
-  const selectedShard =
-    selectedSplinter &&
-    data?.shards.find(
-      ({ id }) =>
-        selectedSplinter.category === SplinterCategory.Shard &&
-        selectedSplinter.id === id
-    );
+  const selectedShard = data?.shards.find((shard) =>
+    isSameSplinter(selectedSplinter, shard)
+  );
 
   // TODO Show more interesting info
   return (

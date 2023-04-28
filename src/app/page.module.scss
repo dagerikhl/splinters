@@ -4,11 +4,11 @@
   display: flex;
   height: 100%;
 
-  :first-child {
-    width: calc(100% - var(--panel-width));
+  > :first-child {
+    width: calc(100vw - var(--panel-width)) !important;
   }
 
-  :last-child {
+  > :last-child {
     width: var(--panel-width);
   }
 }

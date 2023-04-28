@@ -1,0 +1,9 @@
+.button {
+  padding: var(--space-xx-small);
+
+  &:not(:disabled) {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
