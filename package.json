@@ -14,6 +14,7 @@
     "url": "https://github.com/dagerikhl/splinters"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "prepare": "husky install",
     "dev": "next dev",
     "build": "next build",
@@ -44,6 +45,8 @@
     "eslint-config-prettier": "8.8.0",
     "husky": "8.0.3",
     "lint-staged": "13.2.2",
+    "patch-package": "7.0.0",
+    "postinstall-postinstall": "2.1.0",
     "prettier": "2.8.8",
     "sass": "1.62.1",
     "typescript": "5.0.4"
