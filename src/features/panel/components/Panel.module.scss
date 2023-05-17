@@ -1,4 +1,13 @@
 .container {
+  position: relative;
   padding: var(--space-small);
   background-color: var(--bkg-color-ter);
+}
+
+.closeBtn {
+  position: absolute;
+  top: var(--space-x-small);
+  right: var(--space-x-small);
+  height: 24px;
+  width: 24px;
 }

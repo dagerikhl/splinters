@@ -6,6 +6,7 @@ import {
   getSplinterTarget,
   isSameSplinter,
 } from "@/features/splinters/utils/targets";
+import { useCursor } from "@react-three/drei";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
 import { useRef, useState } from "react";
@@ -37,6 +38,8 @@ export const Shard = ({
   const [isHovered, setIsHovered] = useState(false);
 
   useFrame((state, delta) => (mesh.current.rotation.y += delta));
+
+  useCursor(isHovered);
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));

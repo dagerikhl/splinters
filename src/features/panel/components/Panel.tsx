@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/common/components/Button";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { formatSplinterName } from "@/features/splinters/utils/formatting";
@@ -9,7 +10,7 @@ import styles from "./Panel.module.scss";
 export const Panel = () => {
   const { data } = useShardsApi();
 
-  const { selectedSplinter } = useSplintersContext();
+  const { selectedSplinter, onDeselectSplinter } = useSplintersContext();
 
   const selectedShard = data?.shards.find((shard) =>
     isSameSplinter(selectedSplinter, shard)
@@ -27,6 +28,10 @@ export const Panel = () => {
               <code>{JSON.stringify(selectedShard, null, 2)}</code>
             </pre>
           )}
+
+          <Button className={styles.closeBtn} onClick={onDeselectSplinter}>
+            X
+          </Button>
         </>
       )}
       {!selectedSplinter && <p>No Shard selected.</p>}
