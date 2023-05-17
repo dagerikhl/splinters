@@ -1,4 +1,4 @@
-import { LoadingIndicator } from "@/common/components/LoadingIndicator/LoadingIndicator";
+import { LoadingIndicator } from "@/common/components/LoadingIndicator";
 
 export default function Loading() {
   return <LoadingIndicator />;

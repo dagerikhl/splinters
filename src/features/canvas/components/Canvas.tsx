@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/common/components/Button";
+import { Button } from "@/common/components/buttons/Button";
 import { Adonalsium } from "@/features/canvas/components/Adonalsium";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
+import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { CameraControls, Stars } from "@react-three/drei";
 import { Canvas as RTFCanvas } from "@react-three/fiber";
 import { useRef } from "react";
@@ -62,6 +63,10 @@ export const Canvas = () => {
 
       <div className={styles.controls}>
         <Button onClick={handleResetCamera}>Reset camera</Button>
+      </div>
+
+      <div className={styles.timeline}>
+        <TimelineController />
       </div>
     </div>
   );

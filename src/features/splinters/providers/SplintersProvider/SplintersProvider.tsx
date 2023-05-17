@@ -15,12 +15,19 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
     setSelectedSplinter(undefined);
   }, []);
 
+  const [time, setTime] = useState(0);
+
   return (
     <SplintersContext.Provider
       value={{
         selectedSplinter,
         onSelectSplinter: setSelectedSplinter,
         onDeselectSplinter: handleDeselectSplinter,
+
+        state: undefined,
+
+        time,
+        onChangeTime: setTime,
       }}
     >
       {children}

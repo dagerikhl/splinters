@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/common/components/Button";
+import { Button } from "@/common/components/buttons/Button";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { formatSplinterName } from "@/features/splinters/utils/formatting";
