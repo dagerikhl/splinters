@@ -11,6 +11,10 @@
   --space-x-large: 2rem;
   --space-xx-large: 3rem;
 
+  --border-rad: 4px;
+
+  // Differs by color scheme
+
   --color-pri: #222222;
   --color-sec: #000000;
   --color-ter: #ffffff;
@@ -20,9 +24,9 @@
   --bkg-color-sec: #dfe4e7;
   --bkg-color-ter: #3b5162;
 
-  --border-color-pri: rgba(0, 0, 0, 25%);
-  --border-color-sec: rgba(0, 0, 0, 35%);
-  --border-color-ter: rgba(0, 0, 0, 50%);
+  --border-color-pri: rgba(50, 50, 50, 25%);
+  --border-color-sec: rgba(50, 50, 50, 35%);
+  --border-color-ter: rgba(50, 50, 50, 50%);
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -35,9 +39,9 @@
     --bkg-color-sec: #3a3d3f;
     --bkg-color-ter: #153d57;
 
-    --border-color-pri: rgba(50, 50, 50, 25%);
-    --border-color-sec: rgba(50, 50, 50, 35%);
-    --border-color-ter: rgba(50, 50, 50, 50%);
+    --border-color-pri: rgba(150, 150, 150, 25%);
+    --border-color-sec: rgba(150, 150, 150, 35%);
+    --border-color-ter: rgba(150, 150, 150, 50%);
   }
 }
 

@@ -2,9 +2,10 @@ import { Header } from "@/common/components/layout/Header";
 import { AppProviders } from "@/features/app/components/AppProviders";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
+import "normalize.css/normalize.css";
 import "@/common/style/globals.scss";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin-ext"] });
 
 export const metadata = {
   title: "Splinters",

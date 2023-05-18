@@ -3,6 +3,8 @@
 import { Button } from "@/common/components/buttons/Button";
 import { Adonalsium } from "@/features/canvas/components/Adonalsium";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
+import { InteractionModeBadge } from "@/features/splinters/components/InteractionModeBadge";
+import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { CameraControls, Stars } from "@react-three/drei";
@@ -66,8 +68,11 @@ export const Canvas = () => {
 
       <div className={styles.actions}>
         <div className={styles.actionBar}>
-          {/* TODO Make component to show mode */}
-          <div>Mode: {interactionMode}</div>
+          {interactionMode !== InteractionMode.Initial ? (
+            <InteractionModeBadge value={interactionMode} />
+          ) : (
+            <div />
+          )}
 
           <div className={styles.controls}>
             <Button onClick={handleResetCamera}>Reset camera</Button>
