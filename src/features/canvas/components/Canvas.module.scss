@@ -2,27 +2,36 @@
   position: relative;
 }
 
-.controls {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-small);
-  margin: var(--space-small) var(--space-small) var(--space-xx-large)
-    var(--space-small);
-}
-
-.timeline {
+.actions {
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   display: flex;
+  flex-direction: column;
+  gap: var(--space-medium);
+  padding: var(--space-small);
+}
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-small);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-small);
+}
+
+.timeline {
+  flex: 1;
+  display: flex;
   justify-content: stretch;
   align-items: center;
-  margin: var(--space-small) var(--space-medium);
 
   > * {
     flex: 1;

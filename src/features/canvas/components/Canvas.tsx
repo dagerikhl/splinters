@@ -3,6 +3,7 @@
 import { Button } from "@/common/components/buttons/Button";
 import { Adonalsium } from "@/features/canvas/components/Adonalsium";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
+import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { CameraControls, Stars } from "@react-three/drei";
 import { Canvas as RTFCanvas } from "@react-three/fiber";
@@ -10,6 +11,8 @@ import { useRef } from "react";
 import styles from "./Canvas.module.scss";
 
 export const Canvas = () => {
+  const { interactionMode } = useSplintersContext();
+
   const { data } = useShardsApi();
 
   const adonalsium = data?.shards.find(({ id }) => id === "adonalsium");
@@ -61,12 +64,21 @@ export const Canvas = () => {
         {/*})}*/}
       </RTFCanvas>
 
-      <div className={styles.controls}>
-        <Button onClick={handleResetCamera}>Reset camera</Button>
-      </div>
+      <div className={styles.actions}>
+        <div className={styles.actionBar}>
+          {/* TODO Make component to show mode */}
+          <div>Mode: {interactionMode}</div>
 
-      <div className={styles.timeline}>
-        <TimelineController />
+          <div className={styles.controls}>
+            <Button onClick={handleResetCamera}>Reset camera</Button>
+          </div>
+        </div>
+
+        <div className={styles.actionBar}>
+          <div className={styles.timeline}>
+            <TimelineController />
+          </div>
+        </div>
       </div>
     </div>
   );

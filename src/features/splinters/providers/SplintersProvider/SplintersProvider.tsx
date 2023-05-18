@@ -1,3 +1,4 @@
+import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
 import { SplintersContext } from "@/features/splinters/providers/SplintersProvider/SplintersContext";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { ReactNode, useCallback, useState } from "react";
@@ -25,6 +26,14 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
         onDeselectSplinter: handleDeselectSplinter,
 
         state: undefined,
+
+        get interactionMode() {
+          if (this.time !== 0) {
+            return InteractionMode.OnTimeline;
+          }
+
+          return InteractionMode.Initial;
+        },
 
         time,
         onChangeTime: setTime,

@@ -1,3 +1,4 @@
+import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { createContext, Dispatch, SetStateAction } from "react";
 
@@ -13,6 +14,10 @@ export interface SplintersStore {
   // TODO Impl. state
   state: unknown;
 
+  // Derived state
+
+  get interactionMode(): InteractionMode;
+
   // Time
 
   time: number;
@@ -24,6 +29,10 @@ const SPLINTERS_STORE_DEFAULT_VALUE: SplintersStore = {
   onDeselectSplinter: () => {},
 
   state: undefined,
+
+  get interactionMode() {
+    return InteractionMode.Initial;
+  },
 
   time: 0,
   onChangeTime: () => {},
