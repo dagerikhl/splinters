@@ -1,6 +1,12 @@
 import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
-import { SplintersContext } from "@/features/splinters/providers/SplintersProvider/SplintersContext";
+import {
+  IGetSplinterState,
+  IUpdateSplinterState,
+  SplintersContext,
+} from "@/features/splinters/providers/SplintersProvider/SplintersContext";
+import { ISplintersState } from "@/features/splinters/types/ISplintersState";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
+import { stringifySplinterTarget } from "@/features/splinters/utils/targets";
 import { ReactNode, useCallback, useState } from "react";
 
 export interface SplintersProviderProps {
@@ -16,6 +22,31 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
     setSelectedSplinter(undefined);
   }, []);
 
+  const [state, setState] = useState<ISplintersState>({ splinterStates: {} });
+
+  const getSplinterState = useCallback<IGetSplinterState>(
+    (target) => state.splinterStates[stringifySplinterTarget(target)],
+    [state.splinterStates],
+  );
+
+  const updateSplinterState = useCallback<IUpdateSplinterState>(
+    (target, newState) => {
+      setState((current) => {
+        const key = stringifySplinterTarget(target);
+        const currentState = current.splinterStates[key];
+
+        return {
+          ...current,
+          splinterStates: {
+            ...current.splinterStates,
+            [key]: { ...currentState, ...newState },
+          },
+        };
+      });
+    },
+    [],
+  );
+
   const [time, setTime] = useState(0);
 
   return (
@@ -25,7 +56,9 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
         onSelectSplinter: setSelectedSplinter,
         onDeselectSplinter: handleDeselectSplinter,
 
-        state: undefined,
+        state,
+        getSplinterState,
+        updateSplinterState,
 
         get interactionMode() {
           if (this.time !== 0) {

@@ -1,18 +1,34 @@
 import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
+import { ISplintersState } from "@/features/splinters/types/ISplintersState";
+import { ISplinterState } from "@/features/splinters/types/ISplinterState";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { createContext, Dispatch, SetStateAction } from "react";
+
+export type IOnSelectSplinter = Dispatch<
+  SetStateAction<ISplinterTarget | undefined>
+>;
+
+export type IGetSplinterState = <T extends ISplinterTarget>(
+  target: T,
+) => ISplinterState | undefined;
+
+export type IUpdateSplinterState = <T extends ISplinterTarget>(
+  target: T,
+  state: ISplinterState,
+) => void;
 
 export interface SplintersStore {
   // Selection
 
   selectedSplinter?: ISplinterTarget;
-  onSelectSplinter: Dispatch<SetStateAction<ISplinterTarget | undefined>>;
-  onDeselectSplinter: () => void;
+  onSelectSplinter: IOnSelectSplinter;
+  onDeselectSplinter: VoidFunction;
 
   // State
 
-  // TODO Impl. state
-  state: unknown;
+  state: ISplintersState;
+  getSplinterState: IGetSplinterState;
+  updateSplinterState: IUpdateSplinterState;
 
   // Derived state
 
@@ -28,7 +44,9 @@ const SPLINTERS_STORE_DEFAULT_VALUE: SplintersStore = {
   onSelectSplinter: () => {},
   onDeselectSplinter: () => {},
 
-  state: undefined,
+  state: { splinterStates: {} },
+  getSplinterState: () => ({}),
+  updateSplinterState: () => {},
 
   get interactionMode() {
     return InteractionMode.Initial;

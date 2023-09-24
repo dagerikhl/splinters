@@ -29,7 +29,10 @@ export const Shard = ({
   children,
   ...rest
 }: ShardProps) => {
-  const { selectedSplinter, onSelectSplinter } = useSplintersContext();
+  const { selectedSplinter, onSelectSplinter, getSplinterState } =
+    useSplintersContext();
+
+  const state = getSplinterState(shard);
 
   const isActive = isSameSplinter(selectedSplinter, shard);
 
@@ -71,7 +74,11 @@ export const Shard = ({
       {children ?? (
         <>
           <boxGeometry />
-          <meshStandardMaterial color={isHovered ? "hotpink" : "orange"} />
+          <meshStandardMaterial
+            color={isHovered ? "hotpink" : "orange"}
+            transparent={true}
+            opacity={state?.isSplintered ? 0.5 : 1}
+          />
         </>
       )}
     </mesh>
