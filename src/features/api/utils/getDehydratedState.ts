@@ -3,7 +3,7 @@ import { dehydrate, DehydratedState } from "@tanstack/query-core";
 import { QueryKey } from "@tanstack/query-core/src/types";
 
 export const getDehydratedState = async <TQueryKey extends QueryKey = QueryKey>(
-  queryKey: TQueryKey
+  queryKey: TQueryKey,
 ): Promise<DehydratedState> => {
   const queryClient = getQueryClient();
 

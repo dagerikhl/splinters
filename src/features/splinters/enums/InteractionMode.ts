@@ -5,7 +5,7 @@ export enum InteractionMode {
 }
 
 export const formatInteractionMode = (
-  value: InteractionMode | undefined
+  value: InteractionMode | undefined,
 ): string | undefined => {
   switch (value) {
     case InteractionMode.Initial:

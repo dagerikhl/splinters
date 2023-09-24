@@ -6,7 +6,7 @@ export const QUERY_CLIENT_CONFIG: QueryClientConfig = {
       suspense: true,
       queryFn: ({ queryKey }) =>
         fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/${queryKey}`).then(
-          (response) => response.json()
+          (response) => response.json(),
         ),
       staleTime: Infinity,
     },

@@ -13,7 +13,7 @@ export const Panel = () => {
   const { selectedSplinter, onDeselectSplinter } = useSplintersContext();
 
   const selectedShard = data?.shards.find((shard) =>
-    isSameSplinter(selectedSplinter, shard)
+    isSameSplinter(selectedSplinter, shard),
   );
 
   // TODO Show more interesting info
