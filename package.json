@@ -25,31 +25,31 @@
     "prettify:fix": "prettier -w src/"
   },
   "dependencies": {
-    "@react-three/drei": "9.66.1",
-    "@react-three/fiber": "8.13.0",
-    "@tanstack/react-query": "4.29.5",
-    "@types/node": "18.16.3",
-    "@types/react": "18.2.0",
-    "@types/react-dom": "18.2.1",
-    "@types/three": "0.151.0",
+    "@react-three/drei": "9.84.3",
+    "@react-three/fiber": "8.14.2",
+    "@tanstack/react-query": "4.35.3",
+    "@types/node": "20.6.4",
+    "@types/react": "18.2.22",
+    "@types/react-dom": "18.2.7",
+    "@types/three": "0.156.0",
     "classnames": "2.3.2",
-    "next": "13.3.1",
+    "next": "13.5.2",
     "normalize.css": "8.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "three": "0.152.2"
+    "three": "0.156.1"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "4.29.6",
-    "eslint": "8.39.0",
-    "eslint-config-next": "13.3.1",
-    "eslint-config-prettier": "8.8.0",
+    "@tanstack/react-query-devtools": "4.35.3",
+    "eslint": "8.50.0",
+    "eslint-config-next": "13.5.2",
+    "eslint-config-prettier": "9.0.0",
     "husky": "8.0.3",
-    "lint-staged": "13.2.2",
-    "patch-package": "7.0.0",
+    "lint-staged": "14.0.1",
+    "patch-package": "8.0.0",
     "postinstall-postinstall": "2.1.0",
-    "prettier": "2.8.8",
-    "sass": "1.62.1",
-    "typescript": "5.0.4"
+    "prettier": "3.0.3",
+    "sass": "1.68.0",
+    "typescript": "5.2.2"
   }
 }
