@@ -1,13 +1,82 @@
 .container {
-  position: relative;
-  padding: var(--space-small);
+  display: flex;
+  flex-direction: column;
   background-color: var(--bkg-color-ter);
 }
 
+.infoScrollContainer {
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  padding: var(--space-small);
+  border-bottom: 1px solid var(--border-color-pri);
+
+  > h1 {
+    flex: 1;
+  }
+}
+
 .closeBtn {
-  position: absolute;
-  top: var(--space-x-small);
-  right: var(--space-x-small);
   height: 24px;
   width: 24px;
+}
+
+.infoGrid {
+  flex: 1;
+  display: grid;
+  grid-template:
+    "type state"
+    "divider divider"
+    "vessel vessel"
+    "slivers slivers"
+    "splits-into splits-into"
+    "combines-into combines-into";
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: repeat(5, auto);
+  align-content: start;
+  gap: var(--space-small);
+  padding: var(--space-medium) var(--space-small);
+  overflow: auto;
+}
+
+.infoType {
+  grid-area: type;
+}
+
+.infoState {
+  grid-area: state;
+  justify-self: end;
+}
+
+.infoSplitsInto {
+  grid-area: splits-into;
+}
+
+.infoCombinesInto {
+  grid-area: combines-into;
+}
+
+.infoVessel {
+  grid-area: vessel;
+}
+
+.infoSlivers {
+  grid-area: slivers;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-small);
+  height: 60px;
+  padding: var(--space-small);
+  border-top: 1px solid var(--border-color-pri);
+}
+
+.message {
+  margin: 0 var(--space-small);
+  padding: var(--space-small);
+  text-align: center;
 }
