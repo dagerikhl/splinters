@@ -9,7 +9,7 @@ export type IOnSelectSplinter = Dispatch<
 >;
 
 export type IGetSplinterState = <T extends ISplinterTarget>(
-  target: T,
+  target: T | undefined,
 ) => ISplinterState | undefined;
 
 export type IUpdateSplinterState = <T extends ISplinterTarget>(

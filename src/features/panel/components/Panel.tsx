@@ -19,8 +19,14 @@ import styles from "./Panel.module.scss";
 export const Panel = () => {
   const { data } = useShardsApi();
 
-  const { selectedSplinter, onDeselectSplinter, state, updateSplinterState } =
-    useSplintersContext();
+  const {
+    selectedSplinter,
+    onDeselectSplinter,
+    getSplinterState,
+    updateSplinterState,
+  } = useSplintersContext();
+
+  const splinterState = getSplinterState(selectedSplinter);
 
   const selectedShard = data?.shards.find((shard) =>
     isSameSplinter(selectedSplinter, shard),
@@ -36,7 +42,15 @@ export const Panel = () => {
   };
 
   const handleSplinterShard = () => {
+    onDeselectSplinter();
+
     updateSplinterState(selectedSplinter!, { isSplintered: true });
+  };
+
+  const handleUnsplinterShard = () => {
+    onDeselectSplinter();
+
+    updateSplinterState(selectedSplinter!, { isSplintered: false });
   };
 
   return (
@@ -120,7 +134,19 @@ export const Panel = () => {
           )}
 
           <div className={styles.actions}>
-            <Button onClick={handleSplinterShard}>Splinter</Button>
+            {splinterState?.isSplintered ? (
+              <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
+            ) : (
+              <Button
+                onClick={handleSplinterShard}
+                disabled={
+                  !selectedShard?.splitsInto ||
+                  selectedShard.splitsInto.length === 0
+                }
+              >
+                Splinter
+              </Button>
+            )}
           </div>
         </>
       )}

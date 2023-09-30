@@ -15,6 +15,6 @@ export interface QueryProviderProps {
 export const QueryProvider = ({ children }: QueryProviderProps) => (
   <QueryClientProvider client={queryClient}>
     {children}
-    <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+    <ReactQueryDevtools initialIsOpen={false} position="bottom-left" />
   </QueryClientProvider>
 );

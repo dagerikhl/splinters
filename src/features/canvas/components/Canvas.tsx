@@ -48,22 +48,6 @@ export const Canvas = () => {
         <CameraControls ref={cameraControlsRef} enabled minDistance={0} />
 
         {adonalsium && <Adonalsium adonalsium={adonalsium} />}
-
-        {/*{adonalsium?.splitsInto?.map((id, i) => {*/}
-        {/*  const shard = data?.shards.find((shard) => shard.id === id);*/}
-
-        {/*  if (!shard) {*/}
-        {/*    return null;*/}
-        {/*  }*/}
-
-        {/*  return (*/}
-        {/*    <Shard*/}
-        {/*      key={id}*/}
-        {/*      shard={shard}*/}
-        {/*      position={[-3 + i * 0.4, -(i % 2) * 1.5, 0]}*/}
-        {/*    />*/}
-        {/*  );*/}
-        {/*})}*/}
       </RTFCanvas>
 
       <div className={styles.actions}>

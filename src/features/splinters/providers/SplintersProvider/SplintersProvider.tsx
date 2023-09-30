@@ -25,7 +25,10 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
   const [state, setState] = useState<ISplintersState>({ splinterStates: {} });
 
   const getSplinterState = useCallback<IGetSplinterState>(
-    (target) => state.splinterStates[stringifySplinterTarget(target)],
+    (target) =>
+      target
+        ? state.splinterStates[stringifySplinterTarget(target)]
+        : undefined,
     [state.splinterStates],
   );
 

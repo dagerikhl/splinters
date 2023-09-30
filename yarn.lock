@@ -2137,6 +2137,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+maath@0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/maath/-/maath-0.10.4.tgz#fc7bfa1c030552ab50db4e72f57a03dcc9dcf654"
+  integrity sha512-neHNZ302rFJzXih8r9o1tUfMouO0WKO/as5n1kX72IZvXv5qIRJyWJ2hdXBj/dCZorvnFOBLSkY8SdPmjfeXLw==
+
 maath@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/maath/-/maath-0.9.0.tgz#425a9600dfc5d0aecfa48029a2e3eea852531b06"
