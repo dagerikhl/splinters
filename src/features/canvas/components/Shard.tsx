@@ -10,24 +10,30 @@ import {
 } from "@/features/splinters/utils/targets";
 import { a, easings, useSpring } from "@react-spring/three";
 import { useCursor } from "@react-three/drei";
-import { ThreeElements, useFrame } from "@react-three/fiber";
-import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
+import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import THREE, { Vector3 } from "three";
+import * as THREE from "three";
 
 const SEL_SCALE = [1, 1.5];
 const HOV_COLOR = ["#ffa500", "#ff69b4"];
+const OPC_SPLINT = [1, 0.5];
 
 interface OwnProps {
   shard: IShard;
+  position?: THREE.Vector3;
+  targetPosition?: THREE.Vector3;
   baseScale?: number;
 }
 
 export type ShardProps = OwnProps &
-  Omit<ThreeElements["mesh"], "children" | "scale">;
+  Omit<MeshProps, "children" | "position" | "scale">;
 
 export const Shard = ({
   shard,
+  visible = true,
+  renderOrder = 0,
+  position,
+  targetPosition,
   baseScale = 1,
   onClick,
   onPointerOver,
@@ -49,7 +55,7 @@ export const Shard = ({
 
   const mesh = useRef<THREE.Mesh>(null);
 
-  useFrame((state, delta) =>
+  useFrame((_state, delta) =>
     mesh.current ? (mesh.current.rotation.y += delta) : 0,
   );
 
@@ -62,7 +68,10 @@ export const Shard = ({
 
   const [springs, api] = useSpring(() => ({
     color: HOV_COLOR[0],
+    opacity: visible ? 1 : 0,
+    position: position?.toArray([]) ?? [0, 0, 0],
     scale: getScale(isActive),
+
     config: (key) => {
       switch (key) {
         default:
@@ -71,17 +80,37 @@ export const Shard = ({
     },
   }));
 
+  // Active effect
   useEffect(() => {
-    if (isActive) {
+    api.start({ scale: getScale(isActive) });
+  }, [api, getScale, isActive]);
+
+  // Hover effect
+  useEffect(() => {
+    api.start({ color: HOV_COLOR[isHovered ? 1 : 0] });
+  }, [api, isHovered]);
+
+  // Splinter effect
+  useEffect(() => {
+    api.start({ opacity: OPC_SPLINT[state?.isSplintered ? 1 : 0] });
+  }, [api, state?.isSplintered]);
+
+  // Splinter for splinters effect
+  useEffect(() => {
+    if (visible && targetPosition) {
+      api.start({ opacity: 1, position: targetPosition.toArray([]) });
+
       return;
     }
 
-    api.start({ scale: getScale(false) });
-  }, [api, getScale, isActive]);
+    if (!visible) {
+      api.start({ opacity: 0, position: position?.toArray([]) ?? [0, 0, 0] });
+
+      return;
+    }
+  }, [api, position, targetPosition, visible]);
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
-    api.start({ scale: getScale(!isActive) });
-
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
 
     onClick?.(event);
@@ -89,8 +118,6 @@ export const Shard = ({
 
   const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
     setIsHovered(true);
-
-    api.start({ color: HOV_COLOR[1] });
 
     onPointerOver?.(event);
   };
@@ -105,47 +132,55 @@ export const Shard = ({
 
   return (
     <>
-      {/* TODO Fix excessive deep TS typing */}
+      {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
+      {/* @ts-ignore */}
       <a.mesh
         ref={mesh}
+        renderOrder={renderOrder}
+        position={springs.position?.to((x, y, z) => [x, y, z])}
         scale={springs.scale}
-        onClick={handleClick}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
+        onClick={visible ? handleClick : undefined}
+        onPointerOver={visible ? handlePointerOver : undefined}
+        onPointerOut={visible ? handlePointerOut : undefined}
         {...rest}
       >
         <boxGeometry />
         <a.meshStandardMaterial
           color={springs.color}
           transparent={true}
-          opacity={state?.isSplintered ? 0.5 : 1}
+          opacity={springs.opacity}
         />
       </a.mesh>
 
-      {state?.isSplintered &&
-        shard.splitsInto &&
-        shard.splitsInto.length > 0 &&
-        shard.splitsInto.map((shardSplinterId, i, arr) => {
-          const shardSplinter = data?.shards.find(
-            ({ id }) => id === shardSplinterId,
-          );
+      {shard.splitsInto && shard.splitsInto.length > 0 && (
+        <group renderOrder={renderOrder - 1}>
+          {shard.splitsInto.map((shardSplinterId, i, arr) => {
+            const shardSplinter = data?.shards.find(
+              ({ id }) => id === shardSplinterId,
+            );
 
-          if (!shardSplinter) {
-            return null;
-          }
+            if (!shardSplinter) {
+              return null;
+            }
 
-          return (
-            <Shard
-              key={shardSplinterId}
-              shard={shardSplinter}
-              position={cardinalToCirclePoint(
-                new Vector3(0, 6, 2),
-                "z",
-                (360 * i) / arr.length,
-              )}
-            />
-          );
-        })}
+            return (
+              <Shard
+                key={shardSplinterId}
+                shard={shardSplinter}
+                visible={!!state?.isSplintered}
+                position={springs.position
+                  ?.to((x, y, z) => new THREE.Vector3(x, y, z))
+                  .get()}
+                targetPosition={cardinalToCirclePoint(
+                  new THREE.Vector3(0, 6, 3),
+                  "z",
+                  (360 * i) / arr.length,
+                )}
+              />
+            );
+          })}
+        </group>
+      )}
     </>
   );
 };
