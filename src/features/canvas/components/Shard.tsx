@@ -8,23 +8,27 @@ import {
   getSplinterTarget,
   isSameSplinter,
 } from "@/features/splinters/utils/targets";
+import { a, easings, useSpring } from "@react-spring/three";
 import { useCursor } from "@react-three/drei";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import THREE, { Vector3 } from "three";
+
+const SEL_SCALE = [1, 1.5];
+const HOV_COLOR = ["#ffa500", "#ff69b4"];
 
 interface OwnProps {
   shard: IShard;
   baseScale?: number;
 }
 
-export type ShardProps = OwnProps & Omit<ThreeElements["mesh"], "children">;
+export type ShardProps = OwnProps &
+  Omit<ThreeElements["mesh"], "children" | "scale">;
 
 export const Shard = ({
   shard,
   baseScale = 1,
-  scale,
   onClick,
   onPointerOver,
   onPointerOut,
@@ -37,11 +41,13 @@ export const Shard = ({
 
   const state = getSplinterState(shard);
 
-  const isActive = isSameSplinter(selectedSplinter, shard);
+  const isActive = useMemo(
+    () => isSameSplinter(selectedSplinter, shard),
+    [selectedSplinter, shard],
+  );
+  const [isHovered, setIsHovered] = useState(false);
 
   const mesh = useRef<THREE.Mesh>(null);
-
-  const [isHovered, setIsHovered] = useState(false);
 
   useFrame((state, delta) =>
     mesh.current ? (mesh.current.rotation.y += delta) : 0,
@@ -49,7 +55,33 @@ export const Shard = ({
 
   useCursor(isHovered);
 
+  const getScale = useCallback(
+    (isActive: boolean) => baseScale * SEL_SCALE[isActive ? 1 : 0],
+    [baseScale],
+  );
+
+  const [springs, api] = useSpring(() => ({
+    color: HOV_COLOR[0],
+    scale: getScale(isActive),
+    config: (key) => {
+      switch (key) {
+        default:
+          return { duration: 180, easing: easings.easeInOutSine };
+      }
+    },
+  }));
+
+  useEffect(() => {
+    if (isActive) {
+      return;
+    }
+
+    api.start({ scale: getScale(false) });
+  }, [api, getScale, isActive]);
+
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    api.start({ scale: getScale(!isActive) });
+
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
 
     onClick?.(event);
@@ -58,32 +90,37 @@ export const Shard = ({
   const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
     setIsHovered(true);
 
+    api.start({ color: HOV_COLOR[1] });
+
     onPointerOver?.(event);
   };
 
   const handlePointerOut = (event: ThreeEvent<PointerEvent>) => {
     setIsHovered(false);
 
+    api.start({ color: HOV_COLOR[0] });
+
     onPointerOut?.(event);
   };
 
   return (
     <>
-      <mesh
+      {/* TODO Fix excessive deep TS typing */}
+      <a.mesh
         ref={mesh}
-        scale={scale ?? baseScale * (isActive ? 1.5 : 1)}
+        scale={springs.scale}
         onClick={handleClick}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
         {...rest}
       >
         <boxGeometry />
-        <meshStandardMaterial
-          color={isHovered ? "hotpink" : "orange"}
+        <a.meshStandardMaterial
+          color={springs.color}
           transparent={true}
           opacity={state?.isSplintered ? 0.5 : 1}
         />
-      </mesh>
+      </a.mesh>
 
       {state?.isSplintered &&
         shard.splitsInto &&

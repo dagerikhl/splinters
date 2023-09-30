@@ -7,10 +7,31 @@ import { InteractionModeBadge } from "@/features/splinters/components/Interactio
 import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
 import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { TimelineController } from "@/features/timeline/components/TimelineController";
+import { Globals } from "@react-spring/three";
 import { CameraControls, Stars } from "@react-three/drei";
 import { Canvas as RTFCanvas } from "@react-three/fiber";
 import { useRef } from "react";
 import styles from "./Canvas.module.scss";
+
+// Fixes: https://github.com/pmndrs/react-spring/issues/1586
+Globals.assign({
+  frameLoop: "always",
+});
+
+// Suppresses the warning from ReactSpring, see https://github.com/pmndrs/react-spring/issues/1586
+const originalConsoleWarn = console.warn;
+console.warn = (...args) => {
+  if (
+    args &&
+    typeof args[0] === "string" &&
+    args[0] ===
+      "Cannot call the manual advancement of rafz whilst frameLoop is not set as demand"
+  ) {
+    return;
+  }
+
+  originalConsoleWarn(...args);
+};
 
 export const Canvas = () => {
   const { interactionMode } = useSplintersContext();

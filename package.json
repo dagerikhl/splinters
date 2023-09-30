@@ -25,6 +25,7 @@
     "prettify:fix": "prettier -w src/"
   },
   "dependencies": {
+    "@react-spring/three": "9.7.3",
     "@react-three/drei": "9.84.3",
     "@react-three/fiber": "8.14.2",
     "@tanstack/react-query": "4.35.3",

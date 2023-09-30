@@ -42,14 +42,10 @@ export const Panel = () => {
   };
 
   const handleSplinterShard = () => {
-    onDeselectSplinter();
-
     updateSplinterState(selectedSplinter!, { isSplintered: true });
   };
 
   const handleUnsplinterShard = () => {
-    onDeselectSplinter();
-
     updateSplinterState(selectedSplinter!, { isSplintered: false });
   };
 
