@@ -4,8 +4,6 @@ import { Button } from "@/common/components/buttons/Button";
 import { Adonalsium } from "@/features/canvas/components/Adonalsium";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
 import { InteractionModeBadge } from "@/features/splinters/components/InteractionModeBadge";
-import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
-import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { Globals } from "@react-spring/three";
 import { CameraControls, Stars } from "@react-three/drei";
@@ -34,8 +32,6 @@ console.warn = (...args) => {
 };
 
 export const Canvas = () => {
-  const { interactionMode } = useSplintersContext();
-
   const { data } = useShardsApi();
 
   const adonalsium = data?.shards.find(({ id }) => id === "adonalsium");
@@ -73,11 +69,7 @@ export const Canvas = () => {
 
       <div className={styles.actions}>
         <div className={styles.actionBar}>
-          {interactionMode !== InteractionMode.Initial ? (
-            <InteractionModeBadge value={interactionMode} />
-          ) : (
-            <div />
-          )}
+          <InteractionModeBadge />
 
           <div className={styles.controls}>
             <Button onClick={handleResetCamera}>Reset camera</Button>

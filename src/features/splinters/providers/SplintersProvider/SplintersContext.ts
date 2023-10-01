@@ -32,7 +32,7 @@ export interface SplintersStore {
 
   // Derived state
 
-  get interactionMode(): InteractionMode;
+  interactionMode: InteractionMode;
 
   // Time
 
@@ -48,9 +48,7 @@ const SPLINTERS_STORE_DEFAULT_VALUE: SplintersStore = {
   getSplinterState: () => ({}),
   updateSplinterState: () => {},
 
-  get interactionMode() {
-    return InteractionMode.Initial;
-  },
+  interactionMode: InteractionMode.Initial,
 
   time: 0,
   onChangeTime: () => {},

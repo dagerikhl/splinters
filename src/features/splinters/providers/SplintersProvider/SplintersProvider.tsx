@@ -7,7 +7,7 @@ import {
 import { ISplintersState } from "@/features/splinters/types/ISplintersState";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { stringifySplinterTarget } from "@/features/splinters/utils/targets";
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 
 export interface SplintersProviderProps {
   children?: ReactNode;
@@ -18,7 +18,7 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
     ISplinterTarget | undefined
   >();
 
-  const handleDeselectSplinter = useCallback(() => {
+  const handleDeselectSplinter = useCallback<VoidFunction>(() => {
     setSelectedSplinter(undefined);
   }, []);
 
@@ -52,6 +52,14 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
 
   const [time, setTime] = useState(0);
 
+  const interactionMode = useMemo(() => {
+    if (time !== 0) {
+      return InteractionMode.OnTimeline;
+    }
+
+    return InteractionMode.Initial;
+  }, [time]);
+
   return (
     <SplintersContext.Provider
       value={{
@@ -63,13 +71,7 @@ export const SplintersProvider = ({ children }: SplintersProviderProps) => {
         getSplinterState,
         updateSplinterState,
 
-        get interactionMode() {
-          if (this.time !== 0) {
-            return InteractionMode.OnTimeline;
-          }
-
-          return InteractionMode.Initial;
-        },
+        interactionMode,
 
         time,
         onChangeTime: setTime,

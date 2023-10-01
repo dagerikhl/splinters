@@ -3,11 +3,18 @@ import {
   formatInteractionMode,
   InteractionMode,
 } from "@/features/splinters/enums/InteractionMode";
+import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
 
-export interface InteractionModeBadgeProps {
-  value?: InteractionMode;
-}
+export const InteractionModeBadge = () => {
+  const { interactionMode } = useSplintersContext();
 
-export const InteractionModeBadge = ({ value }: InteractionModeBadgeProps) => (
-  <Badge title="Interaction mode">{formatInteractionMode(value)}</Badge>
-);
+  if (interactionMode === InteractionMode.Initial) {
+    return <div />;
+  }
+
+  return (
+    <Badge title="Interaction mode">
+      {formatInteractionMode(interactionMode)}
+    </Badge>
+  );
+};
