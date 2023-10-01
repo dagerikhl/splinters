@@ -20,25 +20,24 @@ const OPC_SPLINT = [1, 0.5];
 
 interface OwnProps {
   shard: IShard;
+  show?: boolean;
   position?: THREE.Vector3;
   targetPosition?: THREE.Vector3;
   baseScale?: number;
 }
 
 export type ShardProps = OwnProps &
-  Omit<MeshProps, "children" | "position" | "scale">;
+  Pick<MeshProps, "onClick" | "onPointerOver" | "onPointerOut">;
 
 export const Shard = ({
   shard,
-  visible = true,
-  renderOrder = 0,
+  show = true,
   position,
   targetPosition,
   baseScale = 1,
   onClick,
   onPointerOver,
   onPointerOut,
-  ...rest
 }: ShardProps) => {
   const { selectedSplinter, onSelectSplinter, getSplinterState } =
     useSplintersContext();
@@ -68,7 +67,7 @@ export const Shard = ({
 
   const [springs, api] = useSpring(() => ({
     color: HOV_COLOR[0],
-    opacity: visible ? 1 : 0,
+    opacity: show ? 1 : 0,
     position: position?.toArray([]) ?? [0, 0, 0],
     scale: getScale(isActive),
 
@@ -97,18 +96,18 @@ export const Shard = ({
 
   // Splinter for splinters effect
   useEffect(() => {
-    if (visible && targetPosition) {
+    if (show && targetPosition) {
       api.start({ opacity: 1, position: targetPosition.toArray([]) });
 
       return;
     }
 
-    if (!visible) {
+    if (!show) {
       api.start({ opacity: 0, position: position?.toArray([]) ?? [0, 0, 0] });
 
       return;
     }
-  }, [api, position, targetPosition, visible]);
+  }, [api, position, targetPosition, show]);
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
@@ -132,19 +131,17 @@ export const Shard = ({
 
   return (
     <>
-      {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
-      {/* @ts-ignore */}
       <a.mesh
         ref={mesh}
-        renderOrder={renderOrder}
         position={springs.position?.to((x, y, z) => [x, y, z])}
         scale={springs.scale}
-        onClick={visible ? handleClick : undefined}
-        onPointerOver={visible ? handlePointerOver : undefined}
-        onPointerOut={visible ? handlePointerOut : undefined}
-        {...rest}
+        onClick={show ? handleClick : undefined}
+        onPointerOver={show ? handlePointerOver : undefined}
+        onPointerOut={show ? handlePointerOut : undefined}
       >
         <boxGeometry />
+        {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
+        {/* @ts-ignore */}
         <a.meshStandardMaterial
           color={springs.color}
           transparent={true}
@@ -152,35 +149,33 @@ export const Shard = ({
         />
       </a.mesh>
 
-      {shard.splitsInto && shard.splitsInto.length > 0 && (
-        <group renderOrder={renderOrder - 1}>
-          {shard.splitsInto.map((shardSplinterId, i, arr) => {
-            const shardSplinter = data?.shards.find(
-              ({ id }) => id === shardSplinterId,
-            );
+      {shard.splitsInto &&
+        shard.splitsInto.length > 0 &&
+        shard.splitsInto.map((shardSplinterId, i, arr) => {
+          const shardSplinter = data?.shards.find(
+            ({ id }) => id === shardSplinterId,
+          );
 
-            if (!shardSplinter) {
-              return null;
-            }
+          if (!shardSplinter) {
+            return null;
+          }
 
-            return (
-              <Shard
-                key={shardSplinterId}
-                shard={shardSplinter}
-                visible={!!state?.isSplintered}
-                position={springs.position
-                  ?.to((x, y, z) => new THREE.Vector3(x, y, z))
-                  .get()}
-                targetPosition={cardinalToCirclePoint(
-                  new THREE.Vector3(0, 6, 3),
-                  "z",
-                  (360 * i) / arr.length,
-                )}
-              />
-            );
-          })}
-        </group>
-      )}
+          return (
+            <Shard
+              key={shardSplinterId}
+              shard={shardSplinter}
+              show={!!state?.isSplintered}
+              position={springs.position
+                ?.to((x, y, z) => new THREE.Vector3(x, y, z))
+                .get()}
+              targetPosition={cardinalToCirclePoint(
+                new THREE.Vector3(0, 6, 3),
+                "z",
+                (360 * i) / arr.length,
+              )}
+            />
+          );
+        })}
     </>
   );
 };
