@@ -8,11 +8,13 @@ import {
   getSplinterTarget,
   isSameSplinter,
 } from "@/features/splinters/utils/targets";
-import { a, easings, useSpring } from "@react-spring/three";
+import { a, easings, Transition, useSpring } from "@react-spring/three";
 import { useCursor } from "@react-three/drei";
 import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+
+const DEFAULT_ANI_CONFIG = { duration: 180, easing: easings.easeInOutSine };
 
 const SEL_SCALE = [1, 1.5];
 const HOV_COLOR = ["#ffa500", "#ff69b4"];
@@ -20,10 +22,8 @@ const OPC_SPLINT = [1, 0.5];
 
 interface OwnProps {
   shard: IShard;
-  show?: boolean;
-  position?: THREE.Vector3;
-  targetPosition?: THREE.Vector3;
   baseScale?: number;
+  position?: THREE.Vector3;
 }
 
 export type ShardProps = OwnProps &
@@ -31,10 +31,9 @@ export type ShardProps = OwnProps &
 
 export const Shard = ({
   shard,
-  show = true,
-  position,
-  targetPosition,
   baseScale = 1,
+
+  position,
   onClick,
   onPointerOver,
   onPointerOut,
@@ -67,14 +66,13 @@ export const Shard = ({
 
   const [springs, api] = useSpring(() => ({
     color: HOV_COLOR[0],
-    opacity: show ? 1 : 0,
-    position: position?.toArray([]) ?? [0, 0, 0],
+    opacity: OPC_SPLINT[0],
     scale: getScale(isActive),
 
     config: (key) => {
       switch (key) {
         default:
-          return { duration: 180, easing: easings.easeInOutSine };
+          return DEFAULT_ANI_CONFIG;
       }
     },
   }));
@@ -94,20 +92,14 @@ export const Shard = ({
     api.start({ opacity: OPC_SPLINT[state?.isSplintered ? 1 : 0] });
   }, [api, state?.isSplintered]);
 
-  // Splinter for splinters effect
-  useEffect(() => {
-    if (show && targetPosition) {
-      api.start({ opacity: 1, position: targetPosition.toArray([]) });
-
-      return;
-    }
-
-    if (!show) {
-      api.start({ opacity: 0, position: position?.toArray([]) ?? [0, 0, 0] });
-
-      return;
-    }
-  }, [api, position, targetPosition, show]);
+  const splinters =
+    shard.splitsInto &&
+    shard.splitsInto
+      .map(
+        (shardSplinterId) =>
+          data?.shards.find(({ id }) => id === shardSplinterId),
+      )
+      .filter((x): x is IShard => !!x);
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
@@ -133,11 +125,11 @@ export const Shard = ({
     <>
       <a.mesh
         ref={mesh}
-        position={springs.position?.to((x, y, z) => [x, y, z])}
+        position={position}
         scale={springs.scale}
-        onClick={show ? handleClick : undefined}
-        onPointerOver={show ? handlePointerOver : undefined}
-        onPointerOut={show ? handlePointerOut : undefined}
+        onClick={handleClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
         <boxGeometry />
         {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
@@ -149,33 +141,35 @@ export const Shard = ({
         />
       </a.mesh>
 
-      {shard.splitsInto &&
-        shard.splitsInto.length > 0 &&
-        shard.splitsInto.map((shardSplinterId, i, arr) => {
-          const shardSplinter = data?.shards.find(
-            ({ id }) => id === shardSplinterId,
-          );
+      {splinters?.map((shardSplinter, i, arr) => {
+        const originVector = position ?? new THREE.Vector3();
+        const originPosition = originVector.toArray();
 
-          if (!shardSplinter) {
-            return null;
-          }
-
-          return (
-            <Shard
-              key={shardSplinterId}
-              shard={shardSplinter}
-              show={!!state?.isSplintered}
-              position={springs.position
-                ?.to((x, y, z) => new THREE.Vector3(x, y, z))
-                .get()}
-              targetPosition={cardinalToCirclePoint(
-                new THREE.Vector3(0, 6, 3),
+        return (
+          <Transition
+            key={shardSplinter.id}
+            items={state?.isSplintered ? shardSplinter : undefined}
+            config={DEFAULT_ANI_CONFIG}
+            from={{
+              position: originPosition,
+            }}
+            enter={{
+              position: cardinalToCirclePoint(
+                originVector.add(new THREE.Vector3(0, 6, 3)),
                 "z",
                 (360 * i) / arr.length,
-              )}
-            />
-          );
-        })}
+              ).toArray(),
+            }}
+            leave={{
+              position: originPosition,
+            }}
+          >
+            {(styles) => (
+              <Shard shard={shardSplinter} position={styles.position} />
+            )}
+          </Transition>
+        );
+      })}
     </>
   );
 };
