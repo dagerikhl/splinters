@@ -14,10 +14,11 @@ import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-const DEFAULT_ANI_CONFIG = { duration: 180, easing: easings.easeInOutSine };
+const DEFAULT_SPR_CONFIG = { duration: 400, easing: easings.easeInOutSine };
+const DEFAULT_TRA_CONFIG = { duration: 800, easing: easings.easeInOutElastic };
 
 const SEL_SCALE = [1, 1.5];
-const HOV_COLOR = ["#ffa500", "#ff69b4"];
+const HOV_COLOR = ["#fff195", "#ffc9c9"];
 const OPC_SPLINT = [1, 0.5];
 
 interface OwnProps {
@@ -72,7 +73,7 @@ export const Shard = ({
     config: (key) => {
       switch (key) {
         default:
-          return DEFAULT_ANI_CONFIG;
+          return DEFAULT_SPR_CONFIG;
       }
     },
   }));
@@ -131,15 +132,20 @@ export const Shard = ({
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
       >
-        <boxGeometry />
+        <tetrahedronGeometry args={[1, 2]} />
+
         {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
         {/* @ts-ignore */}
         <a.meshStandardMaterial
+          flatShading
+          roughness={0.4}
+          transparent
           color={springs.color}
-          transparent={true}
           opacity={springs.opacity}
         />
       </a.mesh>
+
+      <pointLight intensity={0.1} decay={0.4} position={position} />
 
       {splinters?.map((shardSplinter, i, arr) => {
         const originVector = position ?? new THREE.Vector3();
@@ -149,15 +155,15 @@ export const Shard = ({
           <Transition
             key={shardSplinter.id}
             items={state?.isSplintered ? shardSplinter : undefined}
-            config={DEFAULT_ANI_CONFIG}
+            config={DEFAULT_TRA_CONFIG}
             from={{
               position: originPosition,
             }}
             enter={{
               position: cardinalToCirclePoint(
-                originVector.add(new THREE.Vector3(0, 6, 3)),
+                originVector.add(new THREE.Vector3(0, 8, 3)),
                 "z",
-                (360 * i) / arr.length,
+                (360 * -i) / arr.length,
               ).toArray(),
             }}
             leave={{

@@ -49,8 +49,7 @@ export const Canvas = () => {
     <div className={styles.container}>
       <RTFCanvas camera={{ position: [0, 5, 20], fov: 60 }}>
         <ambientLight intensity={0.4} />
-        <pointLight intensity={0.7} position={[1000, 1000, 1000]} />
-        <pointLight intensity={0.7} position={[-1000, 1000, -1000]} />
+        <pointLight intensity={0.9} decay={0.1} position={[0, 0, 20]} />
 
         <Stars
           radius={100}
