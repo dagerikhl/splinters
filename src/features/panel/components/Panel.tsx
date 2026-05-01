@@ -10,7 +10,10 @@ import {
   formatSplinterCategory,
   SplinterCategory,
 } from "@/features/splinters/enums/SplinterCategory";
-import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
+import {
+  useSplinterState,
+  useSplintersStore,
+} from "@/features/splinters/store/splintersStore";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
 import { formatSplinterName } from "@/features/splinters/utils/formatting";
 import { isSameSplinter } from "@/features/splinters/utils/targets";
@@ -19,14 +22,11 @@ import styles from "./Panel.module.scss";
 export const Panel = () => {
   const { data } = useShardsApi();
 
-  const {
-    selectedSplinter,
-    onDeselectSplinter,
-    getSplinterState,
-    updateSplinterState,
-  } = useSplintersContext();
+  const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
+  const deselectSplinter = useSplintersStore((s) => s.deselectSplinter);
+  const updateSplinterState = useSplintersStore((s) => s.updateSplinterState);
 
-  const splinterState = getSplinterState(selectedSplinter);
+  const splinterState = useSplinterState(selectedSplinter);
 
   const selectedShard = data?.shards.find((shard) =>
     isSameSplinter(selectedSplinter, shard),
@@ -56,7 +56,7 @@ export const Panel = () => {
           <div className={styles.heading}>
             <h1>{formatSplinterName(selectedShard ?? selectedSplinter)}</h1>
 
-            <Button className={styles.closeBtn} onClick={onDeselectSplinter}>
+            <Button className={styles.closeBtn} onClick={deselectSplinter}>
               X
             </Button>
           </div>

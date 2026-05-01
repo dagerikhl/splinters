@@ -1,8 +1,11 @@
+"use client";
+
 import { Slider } from "@/common/components/form/Slider";
-import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
+import { useSplintersStore } from "@/features/splinters/store/splintersStore";
 
 export const TimelineController = () => {
-  const { time, onChangeTime } = useSplintersContext();
+  const time = useSplintersStore((s) => s.time);
+  const setTime = useSplintersStore((s) => s.setTime);
 
-  return <Slider value={time} onChange={onChangeTime} />;
+  return <Slider value={time} onChange={setTime} />;
 };

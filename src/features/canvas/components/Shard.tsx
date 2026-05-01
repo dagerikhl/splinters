@@ -3,7 +3,10 @@
 import { cardinalToCirclePoint } from "@/common/utils/geometry";
 import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
 import { IShard } from "@/features/cms/shards/types/IShard";
-import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
+import {
+  useSplinterState,
+  useSplintersStore,
+} from "@/features/splinters/store/splintersStore";
 import {
   getSplinterTarget,
   isSameSplinter,
@@ -28,12 +31,12 @@ export interface ShardProps {
 }
 
 export const Shard = ({ shard, baseScale = 1, position }: ShardProps) => {
-  const { selectedSplinter, onSelectSplinter, getSplinterState } =
-    useSplintersContext();
+  const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
+  const selectSplinter = useSplintersStore((s) => s.selectSplinter);
 
   const { data } = useShardsApi();
 
-  const state = getSplinterState(shard);
+  const state = useSplinterState(shard);
 
   const isActive = useMemo(
     () => isSameSplinter(selectedSplinter, shard),
@@ -91,7 +94,7 @@ export const Shard = ({ shard, baseScale = 1, position }: ShardProps) => {
       .filter((x): x is IShard => !!x);
 
   const handleClick = () => {
-    onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
+    selectSplinter(isActive ? undefined : getSplinterTarget(shard));
   };
 
   const handlePointerOver = () => {
