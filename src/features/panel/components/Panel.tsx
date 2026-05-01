@@ -1,154 +1,160 @@
 "use client";
 
 import { Button } from "@/common/components/buttons/Button";
-import { formatShardState } from "@/features/cms/shards/enums/ShardState";
-import { formatShardType } from "@/features/cms/shards/enums/ShardType";
-import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
-import { IShard } from "@/features/cms/shards/types/IShard";
-import { formatShardName } from "@/features/cms/shards/utils/formatting";
-import {
-  formatSplinterCategory,
-  SplinterCategory,
-} from "@/features/splinters/enums/SplinterCategory";
+import { findShard } from "@/features/cms/cosmere/data";
+import { ShardLifecycle } from "@/features/cms/cosmere/types";
 import {
   useSplinterState,
   useSplintersStore,
 } from "@/features/splinters/store/splintersStore";
-import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
-import { formatSplinterName } from "@/features/splinters/utils/formatting";
-import { isSameSplinter } from "@/features/splinters/utils/targets";
 import styles from "./Panel.module.scss";
 
-export const Panel = () => {
-  const { data } = useShardsApi();
+const formatLifecycle = (lifecycle: ShardLifecycle): string => {
+  switch (lifecycle) {
+    case ShardLifecycle.Alive:
+      return "Alive";
+    case ShardLifecycle.Splintered:
+      return "Splintered";
+    case ShardLifecycle.Combined:
+      return "Combined";
+    case ShardLifecycle.Unknown:
+      return "Unknown";
+  }
+};
 
+export const Panel = () => {
   const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
   const deselectSplinter = useSplintersStore((s) => s.deselectSplinter);
   const updateSplinterState = useSplintersStore((s) => s.updateSplinterState);
 
   const splinterState = useSplinterState(selectedSplinter);
 
-  const selectedShard = data?.shards.find((shard) =>
-    isSameSplinter(selectedSplinter, shard),
-  );
-
-  const getShardById = (shardId: string): IShard | undefined => {
-    const shardTarget: ISplinterTarget = {
-      category: SplinterCategory.Shard,
-      id: shardId,
-    };
-
-    return data?.shards.find((shard) => isSameSplinter(shardTarget, shard));
-  };
+  const selectedShard = selectedSplinter
+    ? findShard(selectedSplinter.id)
+    : undefined;
 
   const handleSplinterShard = () => {
-    updateSplinterState(selectedSplinter!, { isSplintered: true });
+    if (!selectedSplinter) return;
+
+    updateSplinterState(selectedSplinter, { isSplintered: true });
   };
 
   const handleUnsplinterShard = () => {
-    updateSplinterState(selectedSplinter!, { isSplintered: false });
+    if (!selectedSplinter) return;
+
+    updateSplinterState(selectedSplinter, { isSplintered: false });
   };
+
+  if (!selectedSplinter || !selectedShard) {
+    return (
+      <aside className={styles.container}>
+        <p className={styles.message}>No Splinter selected.</p>
+      </aside>
+    );
+  }
+
+  const splitsIntoNames = selectedShard.splitsInto?.map((id) => {
+    const child = findShard(id);
+
+    return child?.name ?? id;
+  });
 
   return (
     <aside className={styles.container}>
-      {selectedSplinter && (
-        <>
-          <div className={styles.heading}>
-            <h1>{formatSplinterName(selectedShard ?? selectedSplinter)}</h1>
+      <div className={styles.heading}>
+        <h1>{selectedShard.name}</h1>
 
-            <Button className={styles.closeBtn} onClick={deselectSplinter}>
-              X
-            </Button>
+        <Button className={styles.closeBtn} onClick={deselectSplinter}>
+          X
+        </Button>
+      </div>
+
+      <div className={styles.infoGrid}>
+        <div className={styles.infoState}>
+          State: {formatLifecycle(selectedShard.lifecycle)}
+        </div>
+
+        {selectedShard.vessel && (
+          <div className={styles.infoVessel}>
+            Vessel: {selectedShard.vessel.name}
+            {selectedShard.vessel.species
+              ? ` (${selectedShard.vessel.species})`
+              : ""}
           </div>
+        )}
 
-          {selectedShard && (
-            <div className={styles.infoGrid}>
-              <div className={styles.infoType}>
-                Type: {formatSplinterCategory(selectedShard.category)} &gt;{" "}
-                {formatShardType(selectedShard.type)}
-              </div>
+        {selectedShard.planetarySystem && (
+          <div className={styles.infoVessel}>
+            System: {selectedShard.planetarySystem}
+          </div>
+        )}
 
-              <div className={styles.infoState}>
-                State: {formatShardState(selectedShard.state) ?? "???"}
-              </div>
+        {splitsIntoNames && splitsIntoNames.length > 0 && (
+          <div className={styles.infoSplitsInto}>
+            Splits into: {splitsIntoNames.join(", ")}
+          </div>
+        )}
 
-              <div className={styles.infoSplitsInto}>
-                Splits into:{" "}
-                {selectedShard.splitsInto && selectedShard.splitsInto.length > 0
-                  ? selectedShard.splitsInto
-                      .map((shardId) => {
-                        const shard = getShardById(shardId);
+        {selectedShard.combinesWith && (
+          <div className={styles.infoCombinesInto}>
+            Combines with {findShard(selectedShard.combinesWith.shardId)?.name}{" "}
+            into <strong>{selectedShard.combinesWith.into}</strong>
+          </div>
+        )}
 
-                        return shard ? formatShardName(shard) : shardId;
-                      })
-                      .join(", ")
-                  : "???"}
-              </div>
-
-              <div className={styles.infoCombinesInto}>
-                Combines into:{" "}
-                {selectedShard.combinesInto &&
-                Object.keys(selectedShard.combinesInto).length > 0 ? (
-                  <ul>
-                    {Object.entries(selectedShard.combinesInto).map(
-                      ([combinedShardId, shardIds]) => {
-                        const combinedShard = getShardById(combinedShardId);
-                        const combinedShardName = combinedShard
-                          ? formatShardName(combinedShard)
-                          : combinedShardId;
-
-                        const shardNames = shardIds.map((shardId) => {
-                          const shard = getShardById(shardId);
-
-                          return shard ? formatShardName(shard) : shardId;
-                        });
-
-                        return (
-                          <li key={combinedShardId}>
-                            {combinedShardName}: {shardNames.join(", ")}
-                          </li>
-                        );
-                      },
-                    )}
-                  </ul>
-                ) : (
-                  "???"
-                )}
-              </div>
-
-              <div className={styles.infoVessel}>
-                Vessel: {selectedShard.vessel ?? "???"}
-              </div>
-
-              <div className={styles.infoSlivers}>
-                Slivers:{" "}
-                {selectedShard.slivers && selectedShard.slivers.length > 0
-                  ? selectedShard.slivers.join(", ")
-                  : "???"}
-              </div>
+        {selectedShard.subSplinters &&
+          selectedShard.subSplinters.length > 0 && (
+            <div className={styles.infoSlivers}>
+              Sub-splinters:{" "}
+              {selectedShard.subSplinters.map((s) => s.name).join(", ")}
             </div>
           )}
 
-          <div className={styles.actions}>
-            {splinterState?.isSplintered ? (
-              <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
-            ) : (
-              <Button
-                onClick={handleSplinterShard}
-                disabled={
-                  !selectedShard?.splitsInto ||
-                  selectedShard.splitsInto.length === 0
-                }
-              >
-                Splinter
-              </Button>
-            )}
+        {selectedShard.events.length > 0 && (
+          <div className={styles.infoSlivers}>
+            <strong>Events</strong>
+            <ul>
+              {selectedShard.events.map((event) => (
+                <li key={`${event.tag}-${event.type}`}>
+                  <a
+                    href={event.citation}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {event.tag}
+                  </a>
+                  : {event.description}
+                </li>
+              ))}
+            </ul>
           </div>
-        </>
-      )}
-      {!selectedSplinter && (
-        <p className={styles.message}>No Splinter selected.</p>
-      )}
+        )}
+
+        <div className={styles.infoSlivers}>
+          <a
+            href={selectedShard.citation}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Coppermind: {selectedShard.name}
+          </a>
+        </div>
+      </div>
+
+      <div className={styles.actions}>
+        {splinterState?.isSplintered ? (
+          <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
+        ) : (
+          <Button
+            onClick={handleSplinterShard}
+            disabled={
+              !selectedShard.splitsInto || selectedShard.splitsInto.length === 0
+            }
+          >
+            Splinter
+          </Button>
+        )}
+      </div>
     </aside>
   );
 };

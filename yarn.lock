@@ -146,6 +146,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
+"@dgreenheck/three-pinata@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@dgreenheck/three-pinata/-/three-pinata-2.0.1.tgz#0c08683b09a073250aa08501018964e153bd80fb"
+  integrity sha512-1pQU68B5xguxvRryl6nxZBARDqOW+/lXf7Xpz8QZ87awadSpN85mDNChTEdA4fPfJYyrft+thHS6Ooe7E5rdFA==
+
 "@dimforge/rapier3d-compat@~0.12.0":
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.12.0.tgz#7b3365e1dfdc5cd957b45afe920b4ac06c7cd389"
@@ -653,51 +658,6 @@
     "@parcel/watcher-win32-ia32" "2.5.6"
     "@parcel/watcher-win32-x64" "2.5.6"
 
-"@react-spring/animated@~10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/animated/-/animated-10.0.3.tgz#b42f7041a51d38f395e9ba5fb53ca68c34cd324f"
-  integrity sha512-7MrxADV3vaUADn2V9iYhaIL6iOWRx9nCJjYrsk2AHD2kwPr6fg7Pt0v+deX5RnCDmCKNnD6W5fasiyM8D+wzJQ==
-  dependencies:
-    "@react-spring/shared" "~10.0.3"
-    "@react-spring/types" "~10.0.3"
-
-"@react-spring/core@~10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/core/-/core-10.0.3.tgz#3b4f3991f5902ce46770c2c1ef05c8e53c3a0f73"
-  integrity sha512-D4DwNO68oohDf/0HG2G0Uragzb9IA1oXblxrd6MZAcBcUQG2EHUWXewjdECMPLNmQvlYVyyBRH6gPxXM5DX7DQ==
-  dependencies:
-    "@react-spring/animated" "~10.0.3"
-    "@react-spring/shared" "~10.0.3"
-    "@react-spring/types" "~10.0.3"
-
-"@react-spring/rafz@~10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/rafz/-/rafz-10.0.3.tgz#9b328c3992b23d6317452998670636d6b783f2c4"
-  integrity sha512-Ri2/xqt8OnQ2iFKkxKMSF4Nqv0LSWnxXT4jXFzBDsHgeeH/cHxTLupAWUwmV9hAGgmEhBmh5aONtj3J6R/18wg==
-
-"@react-spring/shared@~10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/shared/-/shared-10.0.3.tgz#654d03c74d3277bae1a565aff981979536be6002"
-  integrity sha512-geCal66nrkaQzUVhPkGomylo+Jpd5VPK8tPMEDevQEfNSWAQP15swHm+MCRG4wVQrQlTi9lOzKzpRoTL3CA84Q==
-  dependencies:
-    "@react-spring/rafz" "~10.0.3"
-    "@react-spring/types" "~10.0.3"
-
-"@react-spring/three@^10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/three/-/three-10.0.3.tgz#5eea7fd8cbf04cacb6565dc9ccc354c2704acef2"
-  integrity sha512-hZP7ChF/EwnWn+H2xuzAsRRfQdhquoBTI1HKgO6X9V8tcVCuR69qJmsA9N00CA4Nzx0bo/zwBtqONmi55Ffm5w==
-  dependencies:
-    "@react-spring/animated" "~10.0.3"
-    "@react-spring/core" "~10.0.3"
-    "@react-spring/shared" "~10.0.3"
-    "@react-spring/types" "~10.0.3"
-
-"@react-spring/types@~10.0.3":
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/@react-spring/types/-/types-10.0.3.tgz#0c2d7a7e783a6f652bcd24cac80ed569bc2ad8d9"
-  integrity sha512-H5Ixkd2OuSIgHtxuHLTt7aJYfhMXKXT/rK32HPD/kSrOB6q6ooeiWAXkBy7L8F3ZxdkBb9ini9zP9UwnEFzWgQ==
-
 "@react-three/drei@^10.7.0":
   version "10.7.7"
   resolved "https://registry.yarnpkg.com/@react-three/drei/-/drei-10.7.7.tgz#7ac029ace001307dfc71c61b6284b1c12efe8b80"
@@ -841,30 +801,6 @@
   integrity sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==
   dependencies:
     tslib "^2.8.0"
-
-"@tanstack/query-core@5.100.6":
-  version "5.100.6"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.100.6.tgz#2f6dc032aaae1f327d85d3b977e6d530c948a91f"
-  integrity sha512-Os2CPUr98to98RYm+D4qGqGkiffn7MGSyl2547a4MljVkHE30AMJRqTiyCqBfMwzAx/I91vCkAxp5tHSla6Twg==
-
-"@tanstack/query-devtools@5.100.6":
-  version "5.100.6"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.100.6.tgz#6deddea4a9195b293dd1f402c5adb45f968502e3"
-  integrity sha512-2SiNwlOiAdTbqktCSmwlXZH8x8mckSbES2O0bdr3qZNhdQl5DCtImZx0S3HGeNHWTIkzTaHx2Isg+bD4M3WRIg==
-
-"@tanstack/react-query-devtools@^5.0.0":
-  version "5.100.6"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-5.100.6.tgz#c779cc25a30410b5c2304ea77d3276b0311568de"
-  integrity sha512-sz3ksMKA2t1rx0+Odzb0x1A3pXH/SVf7fzlzd3sKXzwXz8980f5sbOwfQD6+UfTG8G4Y2KaIg9e3sBn+uC4VTg==
-  dependencies:
-    "@tanstack/query-devtools" "5.100.6"
-
-"@tanstack/react-query@^5.0.0":
-  version "5.100.6"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.100.6.tgz#f69aefc2136b1e7126e630e0d7881cf7b7e25c77"
-  integrity sha512-uVSrps0PV16Cxmcn2rvL+dUhwTpTUtiRW347AEeYxMZXO2pZe9ja7E24PAMGoQ5u2g89DD8u4QhOviBk+RN8RA==
-  dependencies:
-    "@tanstack/query-core" "5.100.6"
 
 "@tweenjs/tween.js@~23.1.3":
   version "23.1.3"
