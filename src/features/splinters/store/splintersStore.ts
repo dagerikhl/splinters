@@ -1,7 +1,5 @@
 import { InteractionMode } from "@/features/splinters/enums/InteractionMode";
-import { ISplinterState } from "@/features/splinters/types/ISplinterState";
 import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
-import { stringifySplinterTarget } from "@/features/splinters/utils/targets";
 import { create } from "zustand";
 
 interface SplintersStore {
@@ -9,11 +7,10 @@ interface SplintersStore {
   selectSplinter: (target: ISplinterTarget | undefined) => void;
   deselectSplinter: () => void;
 
-  splinterStates: Record<string, ISplinterState>;
-  updateSplinterState: (
-    target: ISplinterTarget,
-    state: Partial<ISplinterState>,
-  ) => void;
+  manualSplinters: Record<string, boolean>;
+  toggleManualSplinter: (shardId: string) => void;
+  setManualSplinter: (shardId: string, isSplintered: boolean) => void;
+  resetManualSplinters: () => void;
 
   time: number;
   setTime: (time: number) => void;
@@ -24,31 +21,36 @@ export const useSplintersStore = create<SplintersStore>((set) => ({
   selectSplinter: (target) => set({ selectedSplinter: target }),
   deselectSplinter: () => set({ selectedSplinter: undefined }),
 
-  splinterStates: {},
-  updateSplinterState: (target, state) =>
-    set((current) => {
-      const key = stringifySplinterTarget(target);
-
-      return {
-        splinterStates: {
-          ...current.splinterStates,
-          [key]: { ...current.splinterStates[key], ...state },
-        },
-      };
-    }),
+  manualSplinters: {},
+  toggleManualSplinter: (shardId) =>
+    set((current) => ({
+      manualSplinters: {
+        ...current.manualSplinters,
+        [shardId]: !current.manualSplinters[shardId],
+      },
+    })),
+  setManualSplinter: (shardId, isSplintered) =>
+    set((current) => ({
+      manualSplinters: { ...current.manualSplinters, [shardId]: isSplintered },
+    })),
+  resetManualSplinters: () => set({ manualSplinters: {} }),
 
   time: 0,
   setTime: (time) => set({ time }),
 }));
 
-export const useSplinterState = (
-  target: ISplinterTarget | undefined,
-): ISplinterState | undefined =>
+export const useIsManuallySplintered = (shardId: string | undefined): boolean =>
   useSplintersStore((s) =>
-    target ? s.splinterStates[stringifySplinterTarget(target)] : undefined,
+    shardId ? s.manualSplinters[shardId] === true : false,
   );
 
 export const useInteractionMode = (): InteractionMode =>
-  useSplintersStore((s) =>
-    s.time !== 0 ? InteractionMode.OnTimeline : InteractionMode.Initial,
-  );
+  useSplintersStore((s) => {
+    if (s.time !== 0) return InteractionMode.OnTimeline;
+
+    if (Object.values(s.manualSplinters).some((v) => v)) {
+      return InteractionMode.Manual;
+    }
+
+    return InteractionMode.Initial;
+  });

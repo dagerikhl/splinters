@@ -4,7 +4,7 @@ import { Button } from "@/common/components/buttons/Button";
 import { findShard } from "@/features/cms/cosmere/data";
 import { ShardLifecycle } from "@/features/cms/cosmere/types";
 import {
-  useSplinterState,
+  useIsManuallySplintered,
   useSplintersStore,
 } from "@/features/splinters/store/splintersStore";
 import styles from "./Panel.module.scss";
@@ -25,9 +25,9 @@ const formatLifecycle = (lifecycle: ShardLifecycle): string => {
 export const Panel = () => {
   const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
   const deselectSplinter = useSplintersStore((s) => s.deselectSplinter);
-  const updateSplinterState = useSplintersStore((s) => s.updateSplinterState);
+  const setManualSplinter = useSplintersStore((s) => s.setManualSplinter);
 
-  const splinterState = useSplinterState(selectedSplinter);
+  const isManuallySplintered = useIsManuallySplintered(selectedSplinter?.id);
 
   const selectedShard = selectedSplinter
     ? findShard(selectedSplinter.id)
@@ -36,13 +36,13 @@ export const Panel = () => {
   const handleSplinterShard = () => {
     if (!selectedSplinter) return;
 
-    updateSplinterState(selectedSplinter, { isSplintered: true });
+    setManualSplinter(selectedSplinter.id, true);
   };
 
   const handleUnsplinterShard = () => {
     if (!selectedSplinter) return;
 
-    updateSplinterState(selectedSplinter, { isSplintered: false });
+    setManualSplinter(selectedSplinter.id, false);
   };
 
   if (!selectedSplinter || !selectedShard) {
@@ -142,7 +142,7 @@ export const Panel = () => {
       </div>
 
       <div className={styles.actions}>
-        {splinterState?.isSplintered ? (
+        {isManuallySplintered ? (
           <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
         ) : (
           <Button
