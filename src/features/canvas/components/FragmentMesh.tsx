@@ -22,6 +22,8 @@ export interface FragmentMeshProps {
   parentShardId: string;
 }
 
+const DAMP_LAMBDA = 4;
+
 export const FragmentMesh = ({
   fragment,
   shard,
@@ -30,6 +32,9 @@ export const FragmentMesh = ({
   const meshRef = useRef<THREE.Mesh | null>(null);
   const outerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const displayedParentProgressRef = useRef(0);
+  const displayedOwnProgressRef = useRef(0);
+  const displayedScaleRef = useRef(1);
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -44,7 +49,7 @@ export const FragmentMesh = ({
 
   useCursor(isHovered);
 
-  useFrame(() => {
+  useFrame((_state, delta) => {
     const mesh = meshRef.current;
     const outer = outerMaterialRef.current;
 
@@ -64,26 +69,47 @@ export const FragmentMesh = ({
       manualSplinters,
     });
 
+    displayedParentProgressRef.current = THREE.MathUtils.damp(
+      displayedParentProgressRef.current,
+      parent.splinterProgress,
+      DAMP_LAMBDA,
+      delta,
+    );
+
+    displayedOwnProgressRef.current = THREE.MathUtils.damp(
+      displayedOwnProgressRef.current,
+      own.splinterProgress,
+      DAMP_LAMBDA,
+      delta,
+    );
+
     mesh.position.lerpVectors(
       fragment.homePosition,
       fragment.restPosition,
-      parent.splinterProgress,
+      displayedParentProgressRef.current,
     );
 
     const targetScale = isActive ? 1.15 : 1;
 
-    mesh.scale.lerp(
-      scratchScaleRef.current.set(targetScale, targetScale, targetScale),
-      0.15,
+    displayedScaleRef.current = THREE.MathUtils.damp(
+      displayedScaleRef.current,
+      targetScale,
+      8,
+      delta,
     );
 
-    const opacity = 1 - 0.6 * own.splinterProgress;
+    const s = displayedScaleRef.current;
+
+    mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
+
+    const ownDisplayed = displayedOwnProgressRef.current;
+    const opacity = 1 - 0.6 * ownDisplayed;
 
     outer.opacity = opacity;
     outer.transparent = opacity < 1;
 
     const baseColor = isHovered ? OUTER_HOVER_COLOR : OUTER_BASE_COLOR;
-    const dimMultiplier = 1 - 0.6 * own.splinterProgress;
+    const dimMultiplier = 1 - 0.6 * ownDisplayed;
 
     outer.color.set(baseColor).multiplyScalar(dimMultiplier);
   });

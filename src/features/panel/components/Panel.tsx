@@ -7,6 +7,7 @@ import {
   useIsManuallySplintered,
   useSplintersStore,
 } from "@/features/splinters/store/splintersStore";
+import { ReactNode } from "react";
 import styles from "./Panel.module.scss";
 
 const formatLifecycle = (lifecycle: ShardLifecycle): string => {
@@ -22,6 +23,18 @@ const formatLifecycle = (lifecycle: ShardLifecycle): string => {
   }
 };
 
+interface SectionProps {
+  label: string;
+  children: ReactNode;
+}
+
+const Section = ({ label, children }: SectionProps) => (
+  <div className={styles.section}>
+    <span className={styles.sectionLabel}>{label}</span>
+    <div className={styles.sectionValue}>{children}</div>
+  </div>
+);
+
 export const Panel = () => {
   const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
   const deselectSplinter = useSplintersStore((s) => s.deselectSplinter);
@@ -32,18 +45,6 @@ export const Panel = () => {
   const selectedShard = selectedSplinter
     ? findShard(selectedSplinter.id)
     : undefined;
-
-  const handleSplinterShard = () => {
-    if (!selectedSplinter) return;
-
-    setManualSplinter(selectedSplinter.id, true);
-  };
-
-  const handleUnsplinterShard = () => {
-    if (!selectedSplinter) return;
-
-    setManualSplinter(selectedSplinter.id, false);
-  };
 
   if (!selectedSplinter || !selectedShard) {
     return (
@@ -59,61 +60,68 @@ export const Panel = () => {
     return child?.name ?? id;
   });
 
+  const handleSplinterShard = () => {
+    setManualSplinter(selectedShard.id, true);
+  };
+
+  const handleUnsplinterShard = () => {
+    setManualSplinter(selectedShard.id, false);
+  };
+
   return (
     <aside className={styles.container}>
       <div className={styles.heading}>
         <h1>{selectedShard.name}</h1>
 
-        <Button className={styles.closeBtn} onClick={deselectSplinter}>
-          X
+        <Button
+          className={styles.closeBtn}
+          onClick={deselectSplinter}
+          title="Deselect"
+          aria-label="Deselect"
+        >
+          ×
         </Button>
       </div>
 
-      <div className={styles.infoGrid}>
-        <div className={styles.infoState}>
-          State: {formatLifecycle(selectedShard.lifecycle)}
-        </div>
+      <div className={styles.infoBody}>
+        <Section label="State">
+          {formatLifecycle(selectedShard.lifecycle)}
+        </Section>
 
         {selectedShard.vessel && (
-          <div className={styles.infoVessel}>
-            Vessel: {selectedShard.vessel.name}
+          <Section label="Vessel">
+            {selectedShard.vessel.name}
             {selectedShard.vessel.species
               ? ` (${selectedShard.vessel.species})`
               : ""}
-          </div>
+          </Section>
         )}
 
         {selectedShard.planetarySystem && (
-          <div className={styles.infoVessel}>
-            System: {selectedShard.planetarySystem}
-          </div>
+          <Section label="System">{selectedShard.planetarySystem}</Section>
         )}
 
         {splitsIntoNames && splitsIntoNames.length > 0 && (
-          <div className={styles.infoSplitsInto}>
-            Splits into: {splitsIntoNames.join(", ")}
-          </div>
+          <Section label="Splits into">{splitsIntoNames.join(", ")}</Section>
         )}
 
         {selectedShard.combinesWith && (
-          <div className={styles.infoCombinesInto}>
-            Combines with {findShard(selectedShard.combinesWith.shardId)?.name}{" "}
-            into <strong>{selectedShard.combinesWith.into}</strong>
-          </div>
+          <Section label="Combines with">
+            {findShard(selectedShard.combinesWith.shardId)?.name} into{" "}
+            <strong>{selectedShard.combinesWith.into}</strong>
+          </Section>
         )}
 
         {selectedShard.subSplinters &&
           selectedShard.subSplinters.length > 0 && (
-            <div className={styles.infoSlivers}>
-              Sub-splinters:{" "}
+            <Section label="Sub-splinters">
               {selectedShard.subSplinters.map((s) => s.name).join(", ")}
-            </div>
+            </Section>
           )}
 
         {selectedShard.events.length > 0 && (
-          <div className={styles.infoSlivers}>
-            <strong>Events</strong>
-            <ul>
+          <Section label="Events">
+            <ul className={styles.eventList}>
               {selectedShard.events.map((event) => (
                 <li key={`${event.tag}-${event.type}`}>
                   <a
@@ -121,24 +129,24 @@ export const Panel = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {event.tag}
+                    <span className={styles.eventTag}>{event.tag}</span>
                   </a>
                   : {event.description}
                 </li>
               ))}
             </ul>
-          </div>
+          </Section>
         )}
 
-        <div className={styles.infoSlivers}>
+        <Section label="Coppermind">
           <a
             href={selectedShard.citation}
             target="_blank"
             rel="noopener noreferrer"
           >
-            Coppermind: {selectedShard.name}
+            Read more about {selectedShard.name}
           </a>
-        </div>
+        </Section>
       </div>
 
       <div className={styles.actions}>

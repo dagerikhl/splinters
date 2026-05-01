@@ -1,0 +1,37 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-x-small);
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-xx-small);
+  justify-content: center;
+}
+
+.playButton {
+  min-width: 44px;
+}
+
+.label {
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--color-text-mute, #aab);
+  min-height: 1.4em;
+}
+
+.eventLink {
+  color: var(--color-accent, #ffc9c9);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.scrubbing {
+  color: var(--color-text-mute, #aab);
+  font-variant-numeric: tabular-nums;
+}

@@ -14,6 +14,9 @@ interface SplintersStore {
 
   time: number;
   setTime: (time: number) => void;
+
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
 }
 
 export const useSplintersStore = create<SplintersStore>((set) => ({
@@ -37,6 +40,9 @@ export const useSplintersStore = create<SplintersStore>((set) => ({
 
   time: 0,
   setTime: (time) => set({ time }),
+
+  isPlaying: false,
+  setIsPlaying: (isPlaying) => set({ isPlaying }),
 }));
 
 export const useIsManuallySplintered = (shardId: string | undefined): boolean =>

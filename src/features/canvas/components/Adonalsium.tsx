@@ -32,6 +32,7 @@ export const Adonalsium = () => {
 
   const groupRef = useRef<THREE.Group | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const displayedScaleRef = useRef(1);
   const [isHovered, setIsHovered] = useState(false);
 
   const target = { category: SplinterCategory.Shard, id: adonalsium.id };
@@ -59,10 +60,16 @@ export const Adonalsium = () => {
     const targetScale =
       isActive && own.splinterProgress < SELECT_THRESHOLD ? 1.1 : 1;
 
-    group.scale.lerp(
-      scratchScaleRef.current.set(targetScale, targetScale, targetScale),
-      0.1,
+    displayedScaleRef.current = THREE.MathUtils.damp(
+      displayedScaleRef.current,
+      targetScale,
+      8,
+      delta,
     );
+
+    const s = displayedScaleRef.current;
+
+    group.scale.copy(scratchScaleRef.current.set(s, s, s));
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
