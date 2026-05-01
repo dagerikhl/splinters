@@ -2,6 +2,8 @@
 
 import { Button } from "@/common/components/buttons/Button";
 import { Adonalsium } from "@/features/canvas/components/Adonalsium";
+import { Aethers } from "@/features/canvas/components/Aethers";
+import { Dawnshards } from "@/features/canvas/components/Dawnshards";
 import { InteractionModeBadge } from "@/features/splinters/components/InteractionModeBadge";
 import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { CameraControls, Stars } from "@react-three/drei";
@@ -49,6 +51,10 @@ export const Canvas = () => {
         <CameraControls ref={cameraControlsRef} enabled minDistance={4} />
 
         <Adonalsium />
+
+        <Dawnshards />
+
+        <Aethers />
 
         <EffectComposer>
           <Bloom
