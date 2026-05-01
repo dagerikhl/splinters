@@ -118,7 +118,12 @@ const main = async () => {
   await wait(2500);
   await shoot("03-mid-timeline");
 
-  log("Capture: 04-end (slider at 1.0)");
+  log("Capture: 03b-T16-harmony (Preservation+Ruin merging)");
+  await setSliderValue(page, 9 / 12);
+  await wait(2500);
+  await shoot("03b-T16-harmony");
+
+  log("Capture: 04-end (slider at 1.0, Retribution should be present)");
   await setSliderValue(page, 1.0);
   await wait(2500);
   await shoot("04-end");

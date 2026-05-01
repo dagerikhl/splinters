@@ -1,9 +1,11 @@
 "use client";
 
+import { CombinedShard } from "@/features/canvas/components/CombinedShard";
 import { FractureBurst } from "@/features/canvas/components/FractureBurst";
 import { FragmentMesh } from "@/features/canvas/components/FragmentMesh";
 import { SolidOctahedron } from "@/features/canvas/components/SolidOctahedron";
 import { usePinataFragments } from "@/features/canvas/fracture/usePinataFragments";
+import { COMBINATIONS } from "@/features/cms/cosmere/combinations";
 import { COSMERE_DATA, findShard } from "@/features/cms/cosmere/data";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
 import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
@@ -26,11 +28,37 @@ export const Adonalsium = () => {
     restRadius: 9,
   });
 
+  const childShardIds = adonalsium.splitsInto ?? [];
+
   const childShards = useMemo(
-    () =>
-      (adonalsium.splitsInto ?? []).map((id) => findShard(id)).filter(Boolean),
-    [adonalsium.splitsInto],
+    () => childShardIds.map((id) => findShard(id)).filter(Boolean),
+    [childShardIds],
   );
+
+  const restPositionByShardId = useMemo(() => {
+    const map = new Map<string, THREE.Vector3>();
+
+    childShardIds.forEach((id, i) => {
+      const f = fragments[i];
+
+      if (f) map.set(id, f.restPosition);
+    });
+
+    return map;
+  }, [childShardIds, fragments]);
+
+  const combinationMidpoints = useMemo(() => {
+    return COMBINATIONS.map((combo) => {
+      const a = restPositionByShardId.get(combo.shardAId);
+      const b = restPositionByShardId.get(combo.shardBId);
+
+      if (!a || !b) return null;
+
+      const midpoint = new THREE.Vector3().lerpVectors(a, b, 0.5);
+
+      return { combo, midpoint };
+    }).filter((x): x is NonNullable<typeof x> => x !== null);
+  }, [restPositionByShardId]);
 
   const groupRef = useRef<THREE.Group | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
@@ -128,6 +156,10 @@ export const Adonalsium = () => {
 
       {fragments.map((fragment, i) => {
         const childShard = childShards[i] ?? adonalsium;
+        const partnerId = childShard.combinesWith?.shardId;
+        const partnerRestPosition = partnerId
+          ? restPositionByShardId.get(partnerId)
+          : undefined;
 
         return (
           <FragmentMesh
@@ -135,9 +167,21 @@ export const Adonalsium = () => {
             fragment={fragment}
             shard={childShard}
             parentShardId={adonalsium.id}
+            partnerRestPosition={partnerRestPosition}
           />
         );
       })}
+
+      {combinationMidpoints.map(({ combo, midpoint }) => (
+        <CombinedShard
+          key={combo.id}
+          shardAId={combo.shardAId}
+          shardBId={combo.shardBId}
+          midpoint={midpoint}
+          outerColor={combo.outerColor}
+          emissiveColor={combo.emissiveColor}
+        />
+      ))}
     </group>
   );
 };

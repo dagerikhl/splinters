@@ -21,6 +21,7 @@ export interface FragmentMeshProps {
   fragment: FragmentData;
   shard: IShard;
   parentShardId: string;
+  partnerRestPosition?: THREE.Vector3;
 }
 
 const DAMP_LAMBDA = 4;
@@ -43,12 +44,15 @@ export const FragmentMesh = ({
   fragment,
   shard,
   parentShardId,
+  partnerRestPosition,
 }: FragmentMeshProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const outerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const scratchRestRef = useRef(new THREE.Vector3());
   const displayedParentProgressRef = useRef(0);
   const displayedOwnProgressRef = useRef(0);
+  const displayedCombineProgressRef = useRef(0);
   const displayedScaleRef = useRef(1);
   const tumbleAxisRef = useRef<THREE.Vector3 | null>(null);
 
@@ -108,9 +112,36 @@ export const FragmentMesh = ({
       delta,
     );
 
+    displayedCombineProgressRef.current = THREE.MathUtils.damp(
+      displayedCombineProgressRef.current,
+      own.combineProgress,
+      DAMP_LAMBDA,
+      delta,
+    );
+
+    let restTarget: THREE.Vector3 = fragment.restPosition;
+
+    if (partnerRestPosition && displayedCombineProgressRef.current > 0.001) {
+      const midpoint = scratchRestRef.current.lerpVectors(
+        fragment.restPosition,
+        partnerRestPosition,
+        0.5,
+      );
+
+      const combined = midpoint
+        .clone()
+        .lerpVectors(
+          fragment.restPosition,
+          midpoint,
+          displayedCombineProgressRef.current,
+        );
+
+      restTarget = combined;
+    }
+
     mesh.position.lerpVectors(
       fragment.homePosition,
-      fragment.restPosition,
+      restTarget,
       displayedParentProgressRef.current,
     );
 
@@ -144,8 +175,10 @@ export const FragmentMesh = ({
 
     const ownDisplayed = displayedOwnProgressRef.current;
     const parentDisplayed = displayedParentProgressRef.current;
+    const combineDisplayed = displayedCombineProgressRef.current;
     const fadeIn = THREE.MathUtils.smoothstep(parentDisplayed, 0.4, 0.8);
-    const opacity = fadeIn * (1 - 0.6 * ownDisplayed);
+    const fadeForCombine = 1 - combineDisplayed;
+    const opacity = fadeIn * fadeForCombine * (1 - 0.6 * ownDisplayed);
 
     outer.opacity = opacity;
     outer.transparent = opacity < 1;
