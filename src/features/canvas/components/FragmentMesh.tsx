@@ -12,9 +12,9 @@ import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const SELECT_THRESHOLD = 0.5;
-const OUTER_BASE_COLOR = "#fff195";
-const OUTER_HOVER_COLOR = "#ffc9c9";
-const INNER_COLOR = "#ffd5b3";
+const OUTER_BASE_COLOR = "#e9efff";
+const OUTER_HOVER_COLOR = "#ffd9a8";
+const INNER_EMISSIVE_COLOR = "#ff7a3a";
 
 export interface FragmentMeshProps {
   fragment: FragmentData;
@@ -49,11 +49,14 @@ export const FragmentMesh = ({
 
   useCursor(isHovered);
 
+  const innerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
     const outer = outerMaterialRef.current;
+    const inner = innerMaterialRef.current;
 
-    if (!mesh || !outer) return;
+    if (!mesh || !outer || !inner) return;
 
     const { time, manualSplinters } = useSplintersStore.getState();
 
@@ -103,15 +106,25 @@ export const FragmentMesh = ({
     mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
 
     const ownDisplayed = displayedOwnProgressRef.current;
-    const opacity = 1 - 0.6 * ownDisplayed;
+    const parentDisplayed = displayedParentProgressRef.current;
+    const fadeIn = THREE.MathUtils.smoothstep(parentDisplayed, 0.4, 0.8);
+    const opacity = fadeIn * (1 - 0.6 * ownDisplayed);
 
     outer.opacity = opacity;
     outer.transparent = opacity < 1;
+
+    inner.opacity = opacity;
+    inner.transparent = opacity < 1;
+
+    mesh.visible = opacity > 0.01;
 
     const baseColor = isHovered ? OUTER_HOVER_COLOR : OUTER_BASE_COLOR;
     const dimMultiplier = 1 - 0.6 * ownDisplayed;
 
     outer.color.set(baseColor).multiplyScalar(dimMultiplier);
+
+    inner.color.set(baseColor).multiplyScalar(dimMultiplier);
+    inner.emissiveIntensity = 1.4 * ownDisplayed;
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
@@ -164,16 +177,19 @@ export const FragmentMesh = ({
         ref={outerMaterialRef}
         attach="material-0"
         color={OUTER_BASE_COLOR}
-        roughness={0.4}
+        roughness={0.25}
+        metalness={0.5}
         flatShading
       />
 
       <meshStandardMaterial
+        ref={innerMaterialRef}
         attach="material-1"
-        color={INNER_COLOR}
-        emissive={INNER_COLOR}
+        color={OUTER_BASE_COLOR}
+        emissive={INNER_EMISSIVE_COLOR}
         emissiveIntensity={0}
-        roughness={0.6}
+        roughness={0.5}
+        metalness={0.2}
         flatShading
         toneMapped={false}
       />

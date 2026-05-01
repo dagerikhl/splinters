@@ -18,21 +18,34 @@ export const Canvas = () => {
 
   return (
     <div className={styles.container}>
-      <RTFCanvas camera={{ position: [0, 5, 20], fov: 60 }}>
-        <ambientLight intensity={0.4} />
-        <pointLight intensity={0.9} decay={0.1} position={[0, 0, 20]} />
+      <RTFCanvas camera={{ position: [0, 3, 16], fov: 55 }}>
+        <color attach="background" args={["#05070d"]} />
+
+        <ambientLight intensity={0.25} />
+        <pointLight
+          intensity={1.4}
+          decay={0.2}
+          position={[6, 6, 12]}
+          color="#ffe7c2"
+        />
+        <pointLight
+          intensity={0.6}
+          decay={0.2}
+          position={[-8, -4, 6]}
+          color="#88a8ff"
+        />
 
         <Stars
           radius={100}
           depth={50}
-          count={2000}
+          count={3500}
           factor={4}
           saturation={0}
           fade
           speed={0.5}
         />
 
-        <CameraControls ref={cameraControlsRef} enabled minDistance={0} />
+        <CameraControls ref={cameraControlsRef} enabled minDistance={4} />
 
         <Adonalsium />
       </RTFCanvas>

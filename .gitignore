@@ -38,3 +38,6 @@ next-env.d.ts
 # Editors
 .idea/
 .claude/
+
+# Local artifacts
+/tmp/

@@ -1,6 +1,7 @@
 "use client";
 
 import { FragmentMesh } from "@/features/canvas/components/FragmentMesh";
+import { SolidOctahedron } from "@/features/canvas/components/SolidOctahedron";
 import { usePinataFragments } from "@/features/canvas/fracture/usePinataFragments";
 import { COSMERE_DATA, findShard } from "@/features/cms/cosmere/data";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
@@ -20,8 +21,8 @@ export const Adonalsium = () => {
   const { fragments } = usePinataFragments({
     seed: adonalsium.shape.seed,
     fragmentCount: 16,
-    radius: 2,
-    restRadius: 7,
+    radius: 3,
+    restRadius: 9,
   });
 
   const childShards = useMemo(
@@ -115,6 +116,8 @@ export const Adonalsium = () => {
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
     >
+      <SolidOctahedron shardId={adonalsium.id} radius={3} detail={2} />
+
       {fragments.map((fragment, i) => {
         const childShard = childShards[i] ?? adonalsium;
 

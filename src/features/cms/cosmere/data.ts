@@ -374,7 +374,7 @@ const SHARDS: IShard[] = [
     events: [
       {
         tag: "T8",
-        type: EventType.Splinter,
+        type: EventType.Settle,
         description:
           "Fought alongside Ambition in the Threnodite system; wounded but not Splintered",
         citation: "https://coppermind.net/wiki/Threnodite_system",
