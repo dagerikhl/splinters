@@ -4,8 +4,10 @@ import { SHARDS_QK } from "@/features/cms/shards/constants/query-keys";
 import { SplinterView } from "@/features/splinters/components/SplinterView";
 import styles from "./page.module.scss";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
-  const dehydratedState = getDehydratedState(SHARDS_QK);
+  const dehydratedState = await getDehydratedState(SHARDS_QK);
 
   return (
     <Hydrate state={dehydratedState}>

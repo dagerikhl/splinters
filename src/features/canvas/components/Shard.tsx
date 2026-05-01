@@ -10,7 +10,7 @@ import {
 } from "@/features/splinters/utils/targets";
 import { a, easings, Transition, useSpring } from "@react-spring/three";
 import { useCursor } from "@react-three/drei";
-import { MeshProps, ThreeEvent, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -21,24 +21,13 @@ const SEL_SCALE = [1, 1.5];
 const HOV_COLOR = ["#fff195", "#ffc9c9"];
 const OPC_SPLINT = [1, 0.5];
 
-interface OwnProps {
+export interface ShardProps {
   shard: IShard;
   baseScale?: number;
   position?: THREE.Vector3;
 }
 
-export type ShardProps = OwnProps &
-  Pick<MeshProps, "onClick" | "onPointerOver" | "onPointerOut">;
-
-export const Shard = ({
-  shard,
-  baseScale = 1,
-
-  position,
-  onClick,
-  onPointerOver,
-  onPointerOut,
-}: ShardProps) => {
+export const Shard = ({ shard, baseScale = 1, position }: ShardProps) => {
   const { selectedSplinter, onSelectSplinter, getSplinterState } =
     useSplintersContext();
 
@@ -96,30 +85,23 @@ export const Shard = ({
   const splinters =
     shard.splitsInto &&
     shard.splitsInto
-      .map(
-        (shardSplinterId) =>
-          data?.shards.find(({ id }) => id === shardSplinterId),
+      .map((shardSplinterId) =>
+        data?.shards.find(({ id }) => id === shardSplinterId),
       )
       .filter((x): x is IShard => !!x);
 
-  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+  const handleClick = () => {
     onSelectSplinter(isActive ? undefined : getSplinterTarget(shard));
-
-    onClick?.(event);
   };
 
-  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+  const handlePointerOver = () => {
     setIsHovered(true);
-
-    onPointerOver?.(event);
   };
 
-  const handlePointerOut = (event: ThreeEvent<PointerEvent>) => {
+  const handlePointerOut = () => {
     setIsHovered(false);
 
     api.start({ color: HOV_COLOR[0] });
-
-    onPointerOut?.(event);
   };
 
   return (
@@ -134,8 +116,6 @@ export const Shard = ({
       >
         <tetrahedronGeometry args={[1, 2]} />
 
-        {/* TODO Fix: TS2589: Type instantiation is excessively deep and possibly infinite */}
-        {/* @ts-ignore */}
         <a.meshStandardMaterial
           flatShading
           roughness={0.4}
