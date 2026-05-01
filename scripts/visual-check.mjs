@@ -98,10 +98,20 @@ const main = async () => {
   log("Capture: 01-initial (slider at 0)");
   await shoot("01-initial");
 
+  log("Capture: 02a-T0-burst (mid-fracture, peak burst)");
+  await setSliderValue(page, 0.0833);
+  await wait(150);
+  await shoot("02a-T0-burst");
+
   log("Capture: 02-T0-fully-fractured (slider just past T0)");
   await setSliderValue(page, 0.1);
   await wait(2500);
   await shoot("02-T0-fractured");
+
+  log("Capture: 03a-T14-burst (Honor splintering, peak)");
+  await setSliderValue(page, 8 / 12);
+  await wait(150);
+  await shoot("03a-T14-burst");
 
   log("Capture: 03-mid-timeline (slider at 0.5)");
   await setSliderValue(page, 0.5);

@@ -1,5 +1,6 @@
 "use client";
 
+import { FractureBurst } from "@/features/canvas/components/FractureBurst";
 import { FragmentData } from "@/features/canvas/fracture/usePinataFragments";
 import { IShard } from "@/features/cms/cosmere/types";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
@@ -24,6 +25,20 @@ export interface FragmentMeshProps {
 
 const DAMP_LAMBDA = 4;
 
+const hashAxis = (id: string): THREE.Vector3 => {
+  let h = 2166136261;
+
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+
+  const r = (n: number) =>
+    (((h = Math.imul(h ^ n, 0x85ebca6b)) >>> 0) & 0xffff) / 0xffff - 0.5;
+
+  return new THREE.Vector3(r(1), r(2), r(3)).normalize();
+};
+
 export const FragmentMesh = ({
   fragment,
   shard,
@@ -35,6 +50,13 @@ export const FragmentMesh = ({
   const displayedParentProgressRef = useRef(0);
   const displayedOwnProgressRef = useRef(0);
   const displayedScaleRef = useRef(1);
+  const tumbleAxisRef = useRef<THREE.Vector3 | null>(null);
+
+  if (tumbleAxisRef.current == null) {
+    tumbleAxisRef.current = hashAxis(shard.id);
+  }
+
+  const tumbleSpeedRef = useRef(0.15 + ((shard.shape.seed * 0.07) % 0.3));
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -91,6 +113,21 @@ export const FragmentMesh = ({
       fragment.restPosition,
       displayedParentProgressRef.current,
     );
+
+    const tumbleAxis = tumbleAxisRef.current;
+
+    if (tumbleAxis) {
+      mesh.rotateOnAxis(
+        tumbleAxis,
+        delta *
+          tumbleSpeedRef.current *
+          THREE.MathUtils.smoothstep(
+            displayedParentProgressRef.current,
+            0.3,
+            0.9,
+          ),
+      );
+    }
 
     const targetScale = isActive ? 1.15 : 1;
 
@@ -173,6 +210,13 @@ export const FragmentMesh = ({
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
     >
+      <FractureBurst
+        shardId={shard.id}
+        color="#ff9a4a"
+        glowColor="#ffb86b"
+        maxIntensity={8}
+        maxDistance={6}
+      />
       <meshStandardMaterial
         ref={outerMaterialRef}
         attach="material-0"

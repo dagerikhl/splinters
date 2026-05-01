@@ -30,6 +30,7 @@
     "@dgreenheck/three-pinata": "2.0.1",
     "@react-three/drei": "^10.7.0",
     "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "3.0.4",
     "classnames": "^2.5.1",
     "maath": "^0.10.8",
     "next": "^16.2.0",

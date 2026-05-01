@@ -6,6 +6,7 @@ import { InteractionModeBadge } from "@/features/splinters/components/Interactio
 import { TimelineController } from "@/features/timeline/components/TimelineController";
 import { CameraControls, Stars } from "@react-three/drei";
 import { Canvas as RTFCanvas } from "@react-three/fiber";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useRef } from "react";
 import styles from "./Canvas.module.scss";
 
@@ -48,6 +49,15 @@ export const Canvas = () => {
         <CameraControls ref={cameraControlsRef} enabled minDistance={4} />
 
         <Adonalsium />
+
+        <EffectComposer>
+          <Bloom
+            mipmapBlur
+            luminanceThreshold={0.7}
+            luminanceSmoothing={0.4}
+            intensity={0.8}
+          />
+        </EffectComposer>
       </RTFCanvas>
 
       <div className={styles.actions}>

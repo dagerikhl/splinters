@@ -1,5 +1,6 @@
 "use client";
 
+import { FractureBurst } from "@/features/canvas/components/FractureBurst";
 import { FragmentMesh } from "@/features/canvas/components/FragmentMesh";
 import { SolidOctahedron } from "@/features/canvas/components/SolidOctahedron";
 import { usePinataFragments } from "@/features/canvas/fracture/usePinataFragments";
@@ -117,6 +118,13 @@ export const Adonalsium = () => {
       onPointerOut={handlePointerOut}
     >
       <SolidOctahedron shardId={adonalsium.id} radius={3} detail={2} />
+
+      <FractureBurst
+        shardId={adonalsium.id}
+        color="#fff2c8"
+        maxIntensity={28}
+        maxDistance={32}
+      />
 
       {fragments.map((fragment, i) => {
         const childShard = childShards[i] ?? adonalsium;
