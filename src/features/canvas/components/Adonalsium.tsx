@@ -175,6 +175,7 @@ export const Adonalsium = () => {
       {combinationMidpoints.map(({ combo, midpoint }) => (
         <CombinedShard
           key={combo.id}
+          combinationId={combo.id}
           shardAId={combo.shardAId}
           shardBId={combo.shardBId}
           midpoint={midpoint}

@@ -1,14 +1,19 @@
 "use client";
 
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
+import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
 import { useSplintersStore } from "@/features/splinters/store/splintersStore";
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { isSameSplinter } from "@/features/splinters/utils/targets";
+import { useCursor } from "@react-three/drei";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const DAMP_LAMBDA = 4;
+const SELECT_THRESHOLD = 0.5;
 
 export interface CombinedShardProps {
+  combinationId: string;
   shardAId: string;
   shardBId: string;
   midpoint: THREE.Vector3;
@@ -17,6 +22,7 @@ export interface CombinedShardProps {
 }
 
 export const CombinedShard = ({
+  combinationId,
   shardAId,
   shardBId,
   midpoint,
@@ -27,6 +33,18 @@ export const CombinedShard = ({
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const displayedProgressRef = useRef(0);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const [isHovered, setIsHovered] = useState(false);
+
+  const target = useMemo(
+    () => ({ category: SplinterCategory.Shard, id: combinationId }),
+    [combinationId],
+  );
+
+  const isActive = useSplintersStore((s) =>
+    isSameSplinter(s.selectedSplinter, target),
+  );
+
+  useCursor(isHovered);
 
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
@@ -64,7 +82,8 @@ export const CombinedShard = ({
 
     mesh.position.copy(midpoint);
 
-    const s = 0.6 + p * 1.2;
+    const baseScale = 0.6 + p * 1.2;
+    const s = isActive ? baseScale * 1.15 : baseScale;
 
     mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
 
@@ -76,8 +95,32 @@ export const CombinedShard = ({
     material.emissiveIntensity = 0.3 + 1.4 * p;
   });
 
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    if (displayedProgressRef.current < SELECT_THRESHOLD) return;
+
+    event.stopPropagation();
+    useSplintersStore.getState().selectSplinter(isActive ? undefined : target);
+  };
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+    if (displayedProgressRef.current < SELECT_THRESHOLD) return;
+
+    event.stopPropagation();
+    setIsHovered(true);
+  };
+
+  const handlePointerOut = () => {
+    setIsHovered(false);
+  };
+
   return (
-    <mesh ref={meshRef} visible={false}>
+    <mesh
+      ref={meshRef}
+      visible={false}
+      onClick={handleClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <octahedronGeometry args={[1.6, 1]} />
       <meshStandardMaterial
         ref={materialRef}

@@ -3,9 +3,12 @@
 import { COSMERE_DATA } from "@/features/cms/cosmere/data";
 import { IDawnshard } from "@/features/cms/cosmere/types";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
+import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
 import { useSplintersStore } from "@/features/splinters/store/splintersStore";
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { isSameSplinter } from "@/features/splinters/utils/targets";
+import { useCursor } from "@react-three/drei";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 interface DawnshardGlyphProps {
@@ -17,6 +20,19 @@ interface DawnshardGlyphProps {
 const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const baseAngleRef = useRef((index / count) * Math.PI * 2);
+  const scratchScaleRef = useRef(new THREE.Vector3());
+  const [isHovered, setIsHovered] = useState(false);
+
+  const target = useMemo(
+    () => ({ category: SplinterCategory.Dawnshard, id: dawnshard.id }),
+    [dawnshard.id],
+  );
+
+  const isActive = useSplintersStore((s) =>
+    isSameSplinter(s.selectedSplinter, target),
+  );
+
+  useCursor(isHovered);
 
   useFrame((state) => {
     const mesh = meshRef.current;
@@ -48,12 +64,35 @@ const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
 
     mesh.rotation.y = t * 0.6 + index;
     mesh.rotation.x = t * 0.4;
+
+    const s = isActive || isHovered ? 1.4 : 1;
+
+    mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
   });
+
+  const handleClick = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    useSplintersStore.getState().selectSplinter(isActive ? undefined : target);
+  };
+
+  const handlePointerOver = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
+    setIsHovered(true);
+  };
+
+  const handlePointerOut = () => {
+    setIsHovered(false);
+  };
 
   const isRevealed = dawnshard.revealed;
 
   return (
-    <mesh ref={meshRef}>
+    <mesh
+      ref={meshRef}
+      onClick={handleClick}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+    >
       <octahedronGeometry args={[0.4, 0]} />
       <meshStandardMaterial
         color={isRevealed ? "#fff7d2" : "#5a6070"}

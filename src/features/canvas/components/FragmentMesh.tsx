@@ -210,6 +210,10 @@ export const FragmentMesh = ({
       return;
     }
 
+    if (displayedCombineProgressRef.current > SELECT_THRESHOLD) {
+      return;
+    }
+
     event.stopPropagation();
     useSplintersStore.getState().selectSplinter(isActive ? undefined : target);
   };
@@ -224,6 +228,10 @@ export const FragmentMesh = ({
     });
 
     if (parent.splinterProgress < SELECT_THRESHOLD) {
+      return;
+    }
+
+    if (displayedCombineProgressRef.current > SELECT_THRESHOLD) {
       return;
     }
 
@@ -257,6 +265,7 @@ export const FragmentMesh = ({
         roughness={0.25}
         metalness={0.5}
         flatShading
+        side={THREE.DoubleSide}
       />
 
       <meshStandardMaterial
@@ -269,6 +278,7 @@ export const FragmentMesh = ({
         metalness={0.2}
         flatShading
         toneMapped={false}
+        side={THREE.DoubleSide}
       />
     </mesh>
   );

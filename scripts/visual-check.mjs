@@ -138,6 +138,19 @@ const main = async () => {
   await wait(1000);
   await shoot("06-clicked-canvas");
 
+  log("Capture: 06b-clicked-dawnshard (top-right gold octahedron area)");
+  const canvas = await page.$("canvas");
+
+  if (canvas) {
+    const box = await canvas.boundingBox();
+
+    if (box) {
+      await page.mouse.click(box.x + box.width * 0.62, box.y + box.height * 0.55);
+      await wait(800);
+      await shoot("06b-clicked-dawnshard");
+    }
+  }
+
   log("Capture: 07-manual-splinter (click Splinter button)");
 
   try {

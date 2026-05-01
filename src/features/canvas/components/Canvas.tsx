@@ -24,7 +24,7 @@ export const Canvas = () => {
       <RTFCanvas camera={{ position: [0, 3, 16], fov: 55 }}>
         <color attach="background" args={["#05070d"]} />
 
-        <ambientLight intensity={0.25} />
+        <ambientLight intensity={0.5} />
         <pointLight
           intensity={1.4}
           decay={0.2}
