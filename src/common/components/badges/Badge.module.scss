@@ -1,6 +1,12 @@
 .badge {
-  margin: 1px;
-  padding: var(--space-xx-small) var(--space-x-small);
-  background-color: var(--bkg-color-sec);
-  border-radius: var(--border-rad);
+  display: inline-block;
+  padding: var(--space-xx-small) var(--space-small);
+  background-color: rgba(20, 60, 110, 0.7);
+  color: #b8d4ff;
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(140, 180, 230, 0.35);
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
 }

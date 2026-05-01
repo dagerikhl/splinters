@@ -125,16 +125,39 @@ export const TimelineController = () => {
         </Button>
       </div>
 
-      <Slider
-        value={time}
-        minValue={0}
-        maxValue={1}
-        step={0.001}
-        onChange={(v) => {
-          setIsPlaying(false);
-          setTime(v);
-        }}
-      />
+      <div className={styles.sliderWrap}>
+        <Slider
+          value={time}
+          minValue={0}
+          maxValue={1}
+          step={0.001}
+          onChange={(v) => {
+            setIsPlaying(false);
+            setTime(v);
+          }}
+        />
+
+        <div className={styles.ticks}>
+          {TIMELINE_EVENTS.map((event) => {
+            const t = tagToTime(event.tag);
+            const isCurrent = Math.abs(t - time) < 0.005;
+
+            return (
+              <button
+                key={event.tag}
+                type="button"
+                className={`${styles.tick} ${isCurrent ? styles.tickActive : ""}`}
+                style={{ left: `${t * 100}%` }}
+                title={`${event.tag} — ${event.label}`}
+                onClick={() => {
+                  setIsPlaying(false);
+                  setTime(t);
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
 
       <div className={styles.label}>
         {isAtEvent ? (

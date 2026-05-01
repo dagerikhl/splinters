@@ -5,6 +5,52 @@
   width: 100%;
 }
 
+.sliderWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 6px;
+}
+
+.sliderWrap > input {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.ticks {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+  height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tick {
+  position: absolute;
+  top: -7px;
+  width: 3px;
+  height: 14px;
+  background: rgba(180, 200, 230, 0.55);
+  border-radius: 1px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: #ffd28a;
+  }
+}
+
+.tickActive {
+  background: #ffd28a;
+  box-shadow: 0 0 6px #ffd28a;
+}
+
 .controls {
   display: flex;
   gap: var(--space-xx-small);
