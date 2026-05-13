@@ -25,7 +25,7 @@ export const Adonalsium = () => {
     seed: adonalsium.shape.seed,
     fragmentCount: 16,
     radius: 3,
-    restRadius: 9,
+    restRadius: 15,
   });
 
   const childShardIds = adonalsium.splitsInto ?? [];

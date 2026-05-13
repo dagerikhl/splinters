@@ -67,7 +67,7 @@ const main = async () => {
 
   const context = await browser.newContext({
     viewport: { width: 1280, height: 800 },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: 2,
   });
 
   const page = await context.newPage();
@@ -264,6 +264,47 @@ const main = async () => {
     await shoot("07-manual-splinter");
   } catch (err) {
     log(`  could not click Splinter: ${err.message}`);
+  }
+
+  // Close-up shot at fully-splintered state to catch face-level artifacts
+  // (e.g. gray wedge holes on fragments) that full-canvas screenshots miss.
+  // Settle on a splintered timeline state, find the largest visible fragment
+  // on screen, then crop tightly around it for inspection.
+  log("Capture: 08-shard-closeups (crop the largest visible shards)");
+  try {
+    await setSliderValue(page, 0.5);
+    await wait(4000);
+
+    const canvasEl = await page.$("canvas");
+    const canvasBox = await canvasEl?.boundingBox();
+
+    if (canvasBox) {
+      // Crop a tight region around the four most visually present shards.
+      // The slider=0.5 state has Adonalsium fully fractured but no shards yet
+      // self-splintering, so fragments sit at orbit rest with full color.
+      const crops = [
+        { name: "08a-upper-left", xFrac: 0.05, yFrac: 0.05, wFrac: 0.4, hFrac: 0.4 },
+        { name: "08b-upper-right", xFrac: 0.55, yFrac: 0.05, wFrac: 0.4, hFrac: 0.4 },
+        { name: "08c-lower-left", xFrac: 0.05, yFrac: 0.5, wFrac: 0.4, hFrac: 0.4 },
+        { name: "08d-lower-right", xFrac: 0.55, yFrac: 0.5, wFrac: 0.4, hFrac: 0.4 },
+      ];
+
+      for (const c of crops) {
+        const cropPath = resolve(OUT_DIR, `${c.name}.png`);
+        await page.screenshot({
+          path: cropPath,
+          clip: {
+            x: canvasBox.x + canvasBox.width * c.xFrac,
+            y: canvasBox.y + canvasBox.height * c.yFrac,
+            width: canvasBox.width * c.wFrac,
+            height: canvasBox.height * c.hFrac,
+          },
+        });
+        log(`  saved ${c.name}.png`);
+      }
+    }
+  } catch (err) {
+    log(`  closeup failed: ${err.message}`);
   }
 
   log("Done.");

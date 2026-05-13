@@ -24,18 +24,29 @@ export const Canvas = () => {
       <RTFCanvas camera={{ position: [0, 3, 16], fov: 55 }}>
         <color attach="background" args={["#05070d"]} />
 
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={0.85} />
+        <hemisphereLight
+          intensity={0.5}
+          color="#dceaff"
+          groundColor="#3a2a55"
+        />
         <pointLight
-          intensity={1.4}
+          intensity={1.2}
           decay={0.2}
           position={[6, 6, 12]}
           color="#ffe7c2"
         />
         <pointLight
-          intensity={0.6}
+          intensity={0.5}
           decay={0.2}
           position={[-8, -4, 6]}
           color="#88a8ff"
+        />
+        <pointLight
+          intensity={0.35}
+          decay={0.2}
+          position={[0, -10, -6]}
+          color="#a8b8ff"
         />
 
         <Stars

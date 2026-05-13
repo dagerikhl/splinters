@@ -15,7 +15,6 @@ import * as THREE from "three";
 
 const SELECT_THRESHOLD = 0.5;
 const NEUTRAL_BASE_COLOR = "#e9efff";
-const NEUTRAL_INNER_EMISSIVE = "#ff7a3a";
 const HOVER_MIX = 0.45;
 
 export interface FragmentMeshProps {
@@ -49,7 +48,6 @@ export const FragmentMesh = ({
 }: FragmentMeshProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const outerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
-  const innerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
   const scratchRestRef = useRef(new THREE.Vector3());
   const scratchColorRef = useRef(new THREE.Color());
@@ -89,17 +87,11 @@ export const FragmentMesh = ({
     [shard.color],
   );
 
-  const innerEmissiveColor = useMemo(
-    () => new THREE.Color(shard.color ?? NEUTRAL_INNER_EMISSIVE),
-    [shard.color],
-  );
-
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
     const outer = outerMaterialRef.current;
-    const inner = innerMaterialRef.current;
 
-    if (!mesh || !outer || !inner) return;
+    if (!mesh || !outer) return;
 
     const { time, manualSplinters } = useSplintersStore.getState();
 
@@ -201,9 +193,6 @@ export const FragmentMesh = ({
     outer.opacity = opacity;
     outer.transparent = opacity < 0.999;
 
-    inner.opacity = opacity;
-    inner.transparent = opacity < 0.999;
-
     mesh.visible = opacity > 0.01;
 
     const color = scratchColorRef.current
@@ -215,15 +204,11 @@ export const FragmentMesh = ({
     }
 
     outer.color.copy(color);
-    inner.color.copy(color);
 
-    // Faint shard-tint emissive so unlit faces still register as the shard's
-    // aspect color rather than reading nearly black in shadow.
+    // Strong shard-tint emissive boosts when the shard self-splinters, giving
+    // the "fresh crack" glow without needing a separate inner-cut material.
     outer.emissive.copy(baseColor);
-    outer.emissiveIntensity = 0.35 * dimMultiplier;
-
-    inner.emissive.copy(innerEmissiveColor);
-    inner.emissiveIntensity = 1.6 * ownDisplayed;
+    outer.emissiveIntensity = 0.4 * dimMultiplier + 1.2 * ownDisplayed;
 
     const targetLabelOpacity =
       fadeIn * fadeForCombine * (isHovered || isActive ? 1 : 0.65);
@@ -286,6 +271,7 @@ export const FragmentMesh = ({
     <mesh
       ref={meshRef}
       geometry={fragment.geometry}
+      visible={false}
       onClick={handleClick}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
@@ -306,29 +292,13 @@ export const FragmentMesh = ({
       />
       <meshStandardMaterial
         ref={outerMaterialRef}
-        attach="material-0"
         color={NEUTRAL_BASE_COLOR}
         emissive={NEUTRAL_BASE_COLOR}
         emissiveIntensity={0}
-        roughness={0.3}
-        metalness={0.45}
+        roughness={0.55}
+        metalness={0.1}
         flatShading
         side={THREE.DoubleSide}
-        depthWrite
-      />
-
-      <meshStandardMaterial
-        ref={innerMaterialRef}
-        attach="material-1"
-        color={NEUTRAL_BASE_COLOR}
-        emissive={NEUTRAL_INNER_EMISSIVE}
-        emissiveIntensity={0}
-        roughness={0.5}
-        metalness={0.2}
-        flatShading
-        toneMapped={false}
-        side={THREE.DoubleSide}
-        depthWrite
       />
     </mesh>
   );
