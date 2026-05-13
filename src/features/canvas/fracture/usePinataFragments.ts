@@ -1,5 +1,6 @@
 import { buildOctahedron } from "@/features/canvas/fracture/buildOctahedron";
 import { orientOutward } from "@/features/canvas/fracture/orientOutward";
+import { rebuildAsConvex } from "@/features/canvas/fracture/rebuildAsConvex";
 import { fibonacciSphere } from "@/features/canvas/fracture/restPositions";
 import { generateVoronoiSeeds } from "@/features/canvas/fracture/voronoiSeeds";
 import { DestructibleMesh, FractureOptions } from "@dgreenheck/three-pinata";
@@ -59,16 +60,30 @@ export const usePinataFragments = ({
     const restPositions = fibonacciSphere(fragmentCount, restRadius);
 
     const fragments: FragmentData[] = fragmentMeshes.map((fragment, index) => {
-      const geo = fragment.geometry;
+      const sourceGeo = fragment.geometry;
 
-      // Force all triangles to face outward, so FrontSide-only rendering shows
-      // no holes and there are no see-through back-faces.
-      orientOutward(geo);
-      geo.computeBoundingBox();
-      geo.computeBoundingSphere();
+      // Voronoi cells are convex, so rebuild each fragment as the convex hull
+      // of its vertex cloud. This produces guaranteed-closed manifold meshes
+      // (three-pinata sometimes emits open cells, which read as holes).
+      const convex = rebuildAsConvex(sourceGeo, radius);
+
+      if (convex) {
+        sourceGeo.dispose();
+
+        return {
+          geometry: convex,
+          homePosition: new THREE.Vector3(0, 0, 0),
+          restPosition: restPositions[index] ?? new THREE.Vector3(),
+        };
+      }
+
+      // Fallback to the three-pinata geometry with orientation fix.
+      orientOutward(sourceGeo);
+      sourceGeo.computeBoundingBox();
+      sourceGeo.computeBoundingSphere();
 
       return {
-        geometry: geo,
+        geometry: sourceGeo,
         homePosition: new THREE.Vector3(0, 0, 0),
         restPosition: restPositions[index] ?? new THREE.Vector3(),
       };

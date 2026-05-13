@@ -217,6 +217,11 @@ export const FragmentMesh = ({
     outer.color.copy(color);
     inner.color.copy(color);
 
+    // Faint shard-tint emissive so unlit faces still register as the shard's
+    // aspect color rather than reading nearly black in shadow.
+    outer.emissive.copy(baseColor);
+    outer.emissiveIntensity = 0.35 * dimMultiplier;
+
     inner.emissive.copy(innerEmissiveColor);
     inner.emissiveIntensity = 1.6 * ownDisplayed;
 
@@ -303,6 +308,8 @@ export const FragmentMesh = ({
         ref={outerMaterialRef}
         attach="material-0"
         color={NEUTRAL_BASE_COLOR}
+        emissive={NEUTRAL_BASE_COLOR}
+        emissiveIntensity={0}
         roughness={0.3}
         metalness={0.45}
         flatShading
