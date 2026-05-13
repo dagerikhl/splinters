@@ -1,14 +1,4 @@
 .container {
-  --panel-width: 480px;
-
-  display: flex;
+  position: relative;
   height: 100%;
-
-  > :first-child {
-    width: calc(100vw - var(--panel-width)) !important;
-  }
-
-  > :last-child {
-    width: var(--panel-width);
-  }
 }

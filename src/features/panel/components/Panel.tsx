@@ -217,13 +217,7 @@ export const Panel = () => {
 
   const entity = findEntity(selectedSplinter);
 
-  if (!selectedSplinter || !entity) {
-    return (
-      <aside className={styles.container}>
-        <p className={styles.message}>No Splinter selected.</p>
-      </aside>
-    );
-  }
+  if (!selectedSplinter || !entity) return null;
 
   const handleSplinterShard = () => {
     if (entity.type !== "shard") return;

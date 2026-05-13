@@ -22,11 +22,13 @@ const useDeselectInvisible = () => {
 export const SplinterView = () => {
   useDeselectInvisible();
 
+  const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
+
   return (
     <>
       <Canvas />
 
-      <Panel />
+      {selectedSplinter && <Panel />}
     </>
   );
 };
