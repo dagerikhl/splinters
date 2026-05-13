@@ -1,153 +1,292 @@
 "use client";
 
 import { Button } from "@/common/components/buttons/Button";
-import { formatShardState } from "@/features/cms/shards/enums/ShardState";
-import { formatShardType } from "@/features/cms/shards/enums/ShardType";
-import { useShardsApi } from "@/features/cms/shards/hooks/useShardsApi";
-import { IShard } from "@/features/cms/shards/types/IShard";
-import { formatShardName } from "@/features/cms/shards/utils/formatting";
+import { findShard } from "@/features/cms/cosmere/data";
+import { Entity, findEntity } from "@/features/cms/cosmere/findEntity";
+import { ShardLifecycle } from "@/features/cms/cosmere/types";
 import {
-  formatSplinterCategory,
-  SplinterCategory,
-} from "@/features/splinters/enums/SplinterCategory";
-import { useSplintersContext } from "@/features/splinters/providers/SplintersProvider/useSplintersContext";
-import { ISplinterTarget } from "@/features/splinters/types/ISplinterTarget";
-import { formatSplinterName } from "@/features/splinters/utils/formatting";
-import { isSameSplinter } from "@/features/splinters/utils/targets";
+  useIsManuallySplintered,
+  useSplintersStore,
+} from "@/features/splinters/store/splintersStore";
+import { ReactNode } from "react";
 import styles from "./Panel.module.scss";
 
-export const Panel = () => {
-  const { data } = useShardsApi();
+const formatLifecycle = (lifecycle: ShardLifecycle): string => {
+  switch (lifecycle) {
+    case ShardLifecycle.Alive:
+      return "Alive";
+    case ShardLifecycle.Splintered:
+      return "Splintered";
+    case ShardLifecycle.Combined:
+      return "Combined";
+    case ShardLifecycle.Unknown:
+      return "Unknown";
+  }
+};
 
-  const {
-    selectedSplinter,
-    onDeselectSplinter,
-    getSplinterState,
-    updateSplinterState,
-  } = useSplintersContext();
+interface SectionProps {
+  label: string;
+  children: ReactNode;
+}
 
-  const splinterState = getSplinterState(selectedSplinter);
+const Section = ({ label, children }: SectionProps) => (
+  <div className={styles.section}>
+    <span className={styles.sectionLabel}>{label}</span>
+    <div className={styles.sectionValue}>{children}</div>
+  </div>
+);
 
-  const selectedShard = data?.shards.find((shard) =>
-    isSameSplinter(selectedSplinter, shard),
+const ShardBody = ({
+  shard,
+}: {
+  shard: Extract<Entity, { type: "shard" }>["data"];
+}) => {
+  const splitsIntoNames = shard.splitsInto?.map((id) => {
+    const child = findShard(id);
+
+    return child?.name ?? id;
+  });
+
+  return (
+    <>
+      <Section label="State">{formatLifecycle(shard.lifecycle)}</Section>
+
+      {shard.vessel && (
+        <Section label="Vessel">
+          {shard.vessel.name}
+          {shard.vessel.species ? ` (${shard.vessel.species})` : ""}
+        </Section>
+      )}
+
+      {shard.planetarySystem && (
+        <Section label="System">{shard.planetarySystem}</Section>
+      )}
+
+      {splitsIntoNames && splitsIntoNames.length > 0 && (
+        <Section label="Splits into">{splitsIntoNames.join(", ")}</Section>
+      )}
+
+      {shard.combinesWith && (
+        <Section label="Combines with">
+          {findShard(shard.combinesWith.shardId)?.name} into{" "}
+          <strong>{shard.combinesWith.into}</strong>
+        </Section>
+      )}
+
+      {shard.subSplinters && shard.subSplinters.length > 0 && (
+        <Section label="Sub-splinters">
+          {shard.subSplinters.map((s) => s.name).join(", ")}
+        </Section>
+      )}
+
+      {shard.events.length > 0 && (
+        <Section label="Events">
+          <ul className={styles.eventList}>
+            {shard.events.map((event) => (
+              <li key={`${event.tag}-${event.type}`}>
+                <a
+                  href={event.citation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className={styles.eventTag}>{event.tag}</span>
+                </a>
+                : {event.description}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      <Section label="Coppermind">
+        <a href={shard.citation} target="_blank" rel="noopener noreferrer">
+          Read more about {shard.name}
+        </a>
+      </Section>
+    </>
   );
+};
 
-  const getShardById = (shardId: string): IShard | undefined => {
-    const shardTarget: ISplinterTarget = {
-      category: SplinterCategory.Shard,
-      id: shardId,
-    };
+const AetherBody = ({
+  aether,
+}: {
+  aether: Extract<Entity, { type: "aether" }>["data"];
+}) => (
+  <>
+    <Section label="Type">Primal Aether</Section>
 
-    return data?.shards.find((shard) => isSameSplinter(shardTarget, shard));
-  };
+    <Section label="Origin">{aether.origin}</Section>
+
+    <Section label="Color">
+      <span
+        style={{
+          display: "inline-block",
+          width: 14,
+          height: 14,
+          background: aether.color,
+          borderRadius: "50%",
+          verticalAlign: "middle",
+          marginRight: 8,
+          border: "1px solid rgba(255,255,255,0.2)",
+        }}
+      />
+      {aether.color}
+    </Section>
+
+    <Section label="Note">
+      Aethers exist independently of Adonalsium and may predate the Shattering.
+    </Section>
+
+    <Section label="Coppermind">
+      <a href={aether.citation} target="_blank" rel="noopener noreferrer">
+        Read about Aethers
+      </a>
+    </Section>
+  </>
+);
+
+const DawnshardBody = ({
+  dawnshard,
+}: {
+  dawnshard: Extract<Entity, { type: "dawnshard" }>["data"];
+}) => (
+  <>
+    <Section label="Type">Primal Command (Dawnshard)</Section>
+
+    <Section label="Status">
+      {dawnshard.revealed ? "Revealed" : "Unrevealed in canon"}
+    </Section>
+
+    {dawnshard.bearers && dawnshard.bearers.length > 0 && (
+      <Section label="Bearers">
+        <ul className={styles.eventList}>
+          {dawnshard.bearers.map((b) => (
+            <li key={b.name}>
+              <a href={b.citation} target="_blank" rel="noopener noreferrer">
+                {b.name}
+              </a>{" "}
+              — {b.period}
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )}
+
+    <Section label="Note">
+      The four primal Commands Adonalsium used to create all things; predate the
+      Shattering.
+    </Section>
+
+    <Section label="Coppermind">
+      <a href={dawnshard.citation} target="_blank" rel="noopener noreferrer">
+        Read about Dawnshards
+      </a>
+    </Section>
+  </>
+);
+
+const CombinationBody = ({
+  combo,
+}: {
+  combo: Extract<Entity, { type: "combination" }>["data"];
+}) => {
+  const a = findShard(combo.shardAId);
+  const b = findShard(combo.shardBId);
+
+  return (
+    <>
+      <Section label="Type">Combined Shard</Section>
+
+      <Section label="Formed from">
+        {a?.name ?? combo.shardAId} + {b?.name ?? combo.shardBId}
+      </Section>
+
+      <Section label="Note">
+        A combined Shard takes a new Intent distinct from either parent.
+      </Section>
+    </>
+  );
+};
+
+export const Panel = () => {
+  const selectedSplinter = useSplintersStore((s) => s.selectedSplinter);
+  const deselectSplinter = useSplintersStore((s) => s.deselectSplinter);
+  const setManualSplinter = useSplintersStore((s) => s.setManualSplinter);
+
+  const isManuallySplintered = useIsManuallySplintered(selectedSplinter?.id);
+
+  const entity = findEntity(selectedSplinter);
+
+  if (!selectedSplinter || !entity) {
+    return (
+      <aside className={styles.container}>
+        <p className={styles.message}>No Splinter selected.</p>
+      </aside>
+    );
+  }
 
   const handleSplinterShard = () => {
-    updateSplinterState(selectedSplinter!, { isSplintered: true });
+    if (entity.type !== "shard") return;
+
+    setManualSplinter(entity.data.id, true);
   };
 
   const handleUnsplinterShard = () => {
-    updateSplinterState(selectedSplinter!, { isSplintered: false });
+    if (entity.type !== "shard") return;
+
+    setManualSplinter(entity.data.id, false);
   };
+
+  const name =
+    entity.type === "shard"
+      ? entity.data.name
+      : entity.type === "aether"
+        ? entity.data.name
+        : entity.type === "dawnshard"
+          ? entity.data.name
+          : entity.data.name;
+
+  const canSplinter =
+    entity.type === "shard" &&
+    entity.data.splitsInto &&
+    entity.data.splitsInto.length > 0;
 
   return (
     <aside className={styles.container}>
-      {selectedSplinter && (
-        <>
-          <div className={styles.heading}>
-            <h1>{formatSplinterName(selectedShard ?? selectedSplinter)}</h1>
+      <div className={styles.heading}>
+        <h1>{name}</h1>
 
-            <Button className={styles.closeBtn} onClick={onDeselectSplinter}>
-              X
+        <Button
+          className={styles.closeBtn}
+          onClick={deselectSplinter}
+          title="Deselect"
+          aria-label="Deselect"
+        >
+          ×
+        </Button>
+      </div>
+
+      <div className={styles.infoBody}>
+        {entity.type === "shard" && <ShardBody shard={entity.data} />}
+        {entity.type === "aether" && <AetherBody aether={entity.data} />}
+        {entity.type === "dawnshard" && (
+          <DawnshardBody dawnshard={entity.data} />
+        )}
+        {entity.type === "combination" && (
+          <CombinationBody combo={entity.data} />
+        )}
+      </div>
+
+      {entity.type === "shard" && (
+        <div className={styles.actions}>
+          {isManuallySplintered ? (
+            <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
+          ) : (
+            <Button onClick={handleSplinterShard} disabled={!canSplinter}>
+              Splinter
             </Button>
-          </div>
-
-          {selectedShard && (
-            <div className={styles.infoGrid}>
-              <div className={styles.infoType}>
-                Type: {formatSplinterCategory(selectedShard.category)} &gt;{" "}
-                {formatShardType(selectedShard.type)}
-              </div>
-
-              <div className={styles.infoState}>
-                State: {formatShardState(selectedShard.state) ?? "???"}
-              </div>
-
-              <div className={styles.infoSplitsInto}>
-                Splits into:{" "}
-                {selectedShard.splitsInto && selectedShard.splitsInto.length > 0
-                  ? selectedShard.splitsInto
-                      .map((shardId) => {
-                        const shard = getShardById(shardId);
-
-                        return shard ? formatShardName(shard) : shardId;
-                      })
-                      .join(", ")
-                  : "???"}
-              </div>
-
-              <div className={styles.infoCombinesInto}>
-                Combines into:{" "}
-                {selectedShard.combinesInto &&
-                Object.keys(selectedShard.combinesInto).length > 0 ? (
-                  <ul>
-                    {Object.entries(selectedShard.combinesInto).map(
-                      ([combinedShardId, shardIds]) => {
-                        const combinedShard = getShardById(combinedShardId);
-                        const combinedShardName = combinedShard
-                          ? formatShardName(combinedShard)
-                          : combinedShardId;
-
-                        const shardNames = shardIds.map((shardId) => {
-                          const shard = getShardById(shardId);
-
-                          return shard ? formatShardName(shard) : shardId;
-                        });
-
-                        return (
-                          <li key={combinedShardId}>
-                            {combinedShardName}: {shardNames.join(", ")}
-                          </li>
-                        );
-                      },
-                    )}
-                  </ul>
-                ) : (
-                  "???"
-                )}
-              </div>
-
-              <div className={styles.infoVessel}>
-                Vessel: {selectedShard.vessel ?? "???"}
-              </div>
-
-              <div className={styles.infoSlivers}>
-                Slivers:{" "}
-                {selectedShard.slivers && selectedShard.slivers.length > 0
-                  ? selectedShard.slivers.join(", ")
-                  : "???"}
-              </div>
-            </div>
           )}
-
-          <div className={styles.actions}>
-            {splinterState?.isSplintered ? (
-              <Button onClick={handleUnsplinterShard}>Unsplinter</Button>
-            ) : (
-              <Button
-                onClick={handleSplinterShard}
-                disabled={
-                  !selectedShard?.splitsInto ||
-                  selectedShard.splitsInto.length === 0
-                }
-              >
-                Splinter
-              </Button>
-            )}
-          </div>
-        </>
-      )}
-      {!selectedSplinter && (
-        <p className={styles.message}>No Splinter selected.</p>
+        </div>
       )}
     </aside>
   );

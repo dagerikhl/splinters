@@ -1,6 +1,22 @@
 .badge {
-  margin: 1px;
-  padding: var(--space-xx-small) var(--space-x-small);
-  background-color: var(--bkg-color-sec);
-  border-radius: var(--border-rad);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-x-small);
+  padding: 4px 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(140, 192, 238, 0.18),
+    rgba(20, 60, 110, 0.55)
+  );
+  color: #c8e0ff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border: 1px solid rgba(140, 192, 238, 0.35);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 12px rgba(140, 192, 238, 0.15);
+  backdrop-filter: blur(6px);
 }
