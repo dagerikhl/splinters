@@ -1,10 +1,11 @@
+import { withBasePath } from "@/common/utils/withBasePath";
 import Image from "next/image";
 import styles from "./Header.module.scss";
 
 export const Header = () => (
   <header className={styles.container}>
     <Image
-      src="/logo.png"
+      src={withBasePath("/logo.png")}
       alt="Splinters Logo"
       width={40}
       height={40}
