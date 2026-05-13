@@ -21,7 +21,7 @@ export const Canvas = () => {
 
   return (
     <div className={styles.container}>
-      <RTFCanvas camera={{ position: [0, 3, 16], fov: 55 }}>
+      <RTFCanvas camera={{ position: [0, 6, 38], fov: 55 }}>
         <color attach="background" args={["#05070d"]} />
 
         <ambientLight intensity={0.4} />
