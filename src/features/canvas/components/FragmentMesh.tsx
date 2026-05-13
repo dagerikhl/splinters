@@ -47,7 +47,7 @@ export const FragmentMesh = ({
   partnerRestPosition,
 }: FragmentMeshProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
-  const outerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const outerMaterialRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
   const scratchRestRef = useRef(new THREE.Vector3());
   const scratchColorRef = useRef(new THREE.Color());
@@ -80,16 +80,18 @@ export const FragmentMesh = ({
 
   const baseColor = useMemo(
     () =>
+      // Less neutral blending so shard tints come through as real jewel tones
+      // instead of washing out toward white.
       new THREE.Color(NEUTRAL_BASE_COLOR).lerp(
         new THREE.Color(shard.color ?? NEUTRAL_BASE_COLOR),
-        shard.color ? 0.55 : 0,
+        shard.color ? 0.88 : 0,
       ),
     [shard.color],
   );
 
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
-    const outer = outerMaterialRef.current;
+    const outer = outerMaterialRef.current as THREE.MeshPhysicalMaterial | null;
 
     if (!mesh || !outer) return;
 
@@ -205,10 +207,10 @@ export const FragmentMesh = ({
 
     outer.color.copy(color);
 
-    // Strong shard-tint emissive boosts when the shard self-splinters, giving
-    // the "fresh crack" glow without needing a separate inner-cut material.
+    // Subtle inner-tint emissive (just enough to keep deeply shadowed facets
+    // from going pitch-black) plus a strong glow when the shard self-splinters.
     outer.emissive.copy(baseColor);
-    outer.emissiveIntensity = 0.4 * dimMultiplier + 1.2 * ownDisplayed;
+    outer.emissiveIntensity = 0.1 * dimMultiplier + 1.5 * ownDisplayed;
 
     const targetLabelOpacity =
       fadeIn * fadeForCombine * (isHovered || isActive ? 1 : 0.65);
@@ -290,13 +292,16 @@ export const FragmentMesh = ({
         size="0.72rem"
         color={shard.color ?? "#f4f6ff"}
       />
-      <meshStandardMaterial
+      <meshPhysicalMaterial
         ref={outerMaterialRef}
         color={NEUTRAL_BASE_COLOR}
         emissive={NEUTRAL_BASE_COLOR}
         emissiveIntensity={0}
-        roughness={0.55}
-        metalness={0.1}
+        roughness={0.35}
+        metalness={0.25}
+        clearcoat={0.65}
+        clearcoatRoughness={0.12}
+        reflectivity={0.5}
         flatShading
         side={THREE.DoubleSide}
       />

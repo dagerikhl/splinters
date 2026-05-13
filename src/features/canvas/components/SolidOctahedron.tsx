@@ -66,13 +66,16 @@ export const SolidOctahedron = ({
   return (
     <mesh ref={meshRef}>
       <octahedronGeometry args={[radius, detail]} />
-      <meshStandardMaterial
+      <meshPhysicalMaterial
         ref={materialRef}
         color={OUTER_BASE_COLOR}
         emissive={INNER_EMISSIVE_COLOR}
         emissiveIntensity={0}
-        roughness={0.25}
-        metalness={0.5}
+        roughness={0.3}
+        metalness={0.3}
+        clearcoat={0.7}
+        clearcoatRoughness={0.1}
+        reflectivity={0.5}
         flatShading
         toneMapped={false}
       />
