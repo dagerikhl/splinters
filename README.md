@@ -1,5 +1,7 @@
 # Splinters
 
+**Live:** https://dagerikhl.github.io/splinters/
+
 Interactive 3D visualization of the Shattering of Adonalsium and the resulting Cosmere Shards.
 
 Adonalsium starts as a single octahedron diamond. Scrub the timeline (or hit the **Splinter** button) and it fractures into 16 Voronoi-cut Shards, each tinted with its canon aspect color. Subsequent events on the canonical timeline splinter individual Shards further (Honor at T14, Devotion + Dominion at T7, Ambition at T9), and combine others (Preservation + Ruin → Harmony at T16; Honor + Odium → Retribution at T20). Aethers and Dawnshards orbit independently as canon allows.
