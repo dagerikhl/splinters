@@ -48,6 +48,8 @@ export interface IShard {
   subSplinters?: ISubSplinter[];
   planetarySystem?: string;
   citation: string;
+  /** Canon-aligned tint color for visual identification (Coppermind palette where known). */
+  color?: string;
 }
 
 export interface IAether {

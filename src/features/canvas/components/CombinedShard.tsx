@@ -1,5 +1,7 @@
 "use client";
 
+import { EntityLabel } from "@/features/canvas/components/EntityLabel";
+import { findCombination } from "@/features/cms/cosmere/combinations";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
 import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
 import { useSplintersStore } from "@/features/splinters/store/splintersStore";
@@ -32,8 +34,11 @@ export const CombinedShard = ({
   const meshRef = useRef<THREE.Mesh | null>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const displayedProgressRef = useRef(0);
+  const labelOpacityRef = useRef(0);
   const scratchScaleRef = useRef(new THREE.Vector3());
   const [isHovered, setIsHovered] = useState(false);
+
+  const combinationName = findCombination(combinationId)?.name ?? combinationId;
 
   const target = useMemo(
     () => ({ category: SplinterCategory.Shard, id: combinationId }),
@@ -93,6 +98,13 @@ export const CombinedShard = ({
     material.opacity = p;
     material.transparent = p < 1;
     material.emissiveIntensity = 0.3 + 1.4 * p;
+
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      p,
+      DAMP_LAMBDA,
+      delta,
+    );
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
@@ -131,6 +143,13 @@ export const CombinedShard = ({
         metalness={0.4}
         flatShading
         toneMapped={false}
+      />
+      <EntityLabel
+        name={combinationName}
+        opacityRef={labelOpacityRef}
+        offset={[0, 2.0, 0]}
+        size="1rem"
+        color={emissiveColor}
       />
     </mesh>
   );

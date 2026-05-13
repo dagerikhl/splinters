@@ -1,5 +1,7 @@
 "use client";
 
+import { EntityLabel } from "@/features/canvas/components/EntityLabel";
+import { findShard } from "@/features/cms/cosmere/data";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
 import { useSplintersStore } from "@/features/splinters/store/splintersStore";
 import { useFrame } from "@react-three/fiber";
@@ -24,6 +26,9 @@ export const SolidOctahedron = ({
   const meshRef = useRef<THREE.Mesh | null>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const displayedProgressRef = useRef(0);
+  const labelOpacityRef = useRef(1);
+
+  const shard = findShard(shardId);
 
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
@@ -49,6 +54,13 @@ export const SolidOctahedron = ({
     material.emissiveIntensity = 1.5 * Math.min(1, p * 2);
 
     mesh.visible = opacity > 0.01;
+
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      opacity,
+      DAMP_LAMBDA,
+      delta,
+    );
   });
 
   return (
@@ -64,6 +76,15 @@ export const SolidOctahedron = ({
         flatShading
         toneMapped={false}
       />
+      {shard && (
+        <EntityLabel
+          name={shard.name}
+          opacityRef={labelOpacityRef}
+          offset={[0, radius + 0.6, 0]}
+          size="1.15rem"
+          color={shard.color ?? "#f4f6ff"}
+        />
+      )}
     </mesh>
   );
 };

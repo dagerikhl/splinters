@@ -1,0 +1,15 @@
+.label {
+  white-space: nowrap;
+  padding: 2px 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 0.85),
+    0 1px 3px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+  user-select: none;
+  transform: translate3d(0, 0, 0);
+  transition: transform 120ms ease;
+  will-change: opacity;
+}

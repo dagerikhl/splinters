@@ -1,5 +1,6 @@
 "use client";
 
+import { EntityLabel } from "@/features/canvas/components/EntityLabel";
 import { COSMERE_DATA } from "@/features/cms/cosmere/data";
 import { IDawnshard } from "@/features/cms/cosmere/types";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
@@ -21,6 +22,7 @@ const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const baseAngleRef = useRef((index / count) * Math.PI * 2);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const labelOpacityRef = useRef(0.5);
   const [isHovered, setIsHovered] = useState(false);
 
   const target = useMemo(
@@ -34,7 +36,7 @@ const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
 
   useCursor(isHovered);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const mesh = meshRef.current;
 
     if (!mesh) return;
@@ -68,6 +70,13 @@ const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
     const s = isActive || isHovered ? 1.4 : 1;
 
     mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
+
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      isHovered || isActive ? 1 : 0.5,
+      6,
+      delta,
+    );
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
@@ -101,6 +110,13 @@ const DawnshardGlyph = ({ dawnshard, index, count }: DawnshardGlyphProps) => {
         roughness={0.2}
         metalness={0.6}
         toneMapped={false}
+      />
+      <EntityLabel
+        name={dawnshard.name}
+        opacityRef={labelOpacityRef}
+        offset={[0, 0.65, 0]}
+        size="0.66rem"
+        color={isRevealed ? "#ffd28a" : "#8b95a8"}
       />
     </mesh>
   );

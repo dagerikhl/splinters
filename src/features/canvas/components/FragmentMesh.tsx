@@ -1,5 +1,6 @@
 "use client";
 
+import { EntityLabel } from "@/features/canvas/components/EntityLabel";
 import { FractureBurst } from "@/features/canvas/components/FractureBurst";
 import { FragmentData } from "@/features/canvas/fracture/usePinataFragments";
 import { IShard } from "@/features/cms/cosmere/types";
@@ -13,9 +14,9 @@ import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const SELECT_THRESHOLD = 0.5;
-const OUTER_BASE_COLOR = "#e9efff";
-const OUTER_HOVER_COLOR = "#ffd9a8";
-const INNER_EMISSIVE_COLOR = "#ff7a3a";
+const NEUTRAL_BASE_COLOR = "#e9efff";
+const NEUTRAL_INNER_EMISSIVE = "#ff7a3a";
+const HOVER_MIX = 0.45;
 
 export interface FragmentMeshProps {
   fragment: FragmentData;
@@ -48,12 +49,16 @@ export const FragmentMesh = ({
 }: FragmentMeshProps) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const outerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const innerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
   const scratchScaleRef = useRef(new THREE.Vector3());
   const scratchRestRef = useRef(new THREE.Vector3());
+  const scratchColorRef = useRef(new THREE.Color());
+  const scratchHoverRef = useRef(new THREE.Color("#ffd9a8"));
   const displayedParentProgressRef = useRef(0);
   const displayedOwnProgressRef = useRef(0);
   const displayedCombineProgressRef = useRef(0);
   const displayedScaleRef = useRef(1);
+  const labelOpacityRef = useRef(0);
   const tumbleAxisRef = useRef<THREE.Vector3 | null>(null);
 
   if (tumbleAxisRef.current == null) {
@@ -75,7 +80,19 @@ export const FragmentMesh = ({
 
   useCursor(isHovered);
 
-  const innerMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+  const baseColor = useMemo(
+    () =>
+      new THREE.Color(NEUTRAL_BASE_COLOR).lerp(
+        new THREE.Color(shard.color ?? NEUTRAL_BASE_COLOR),
+        shard.color ? 0.55 : 0,
+      ),
+    [shard.color],
+  );
+
+  const innerEmissiveColor = useMemo(
+    () => new THREE.Color(shard.color ?? NEUTRAL_INNER_EMISSIVE),
+    [shard.color],
+  );
 
   useFrame((_state, delta) => {
     const mesh = meshRef.current;
@@ -178,23 +195,40 @@ export const FragmentMesh = ({
     const combineDisplayed = displayedCombineProgressRef.current;
     const fadeIn = THREE.MathUtils.smoothstep(parentDisplayed, 0.4, 0.8);
     const fadeForCombine = 1 - combineDisplayed;
-    const opacity = fadeIn * fadeForCombine * (1 - 0.6 * ownDisplayed);
+    const opacity = fadeIn * fadeForCombine;
+    const dimMultiplier = 1 - 0.55 * ownDisplayed;
 
     outer.opacity = opacity;
-    outer.transparent = opacity < 1;
+    outer.transparent = opacity < 0.999;
 
     inner.opacity = opacity;
-    inner.transparent = opacity < 1;
+    inner.transparent = opacity < 0.999;
 
     mesh.visible = opacity > 0.01;
 
-    const baseColor = isHovered ? OUTER_HOVER_COLOR : OUTER_BASE_COLOR;
-    const dimMultiplier = 1 - 0.6 * ownDisplayed;
+    const color = scratchColorRef.current
+      .copy(baseColor)
+      .multiplyScalar(dimMultiplier);
 
-    outer.color.set(baseColor).multiplyScalar(dimMultiplier);
+    if (isHovered) {
+      color.lerp(scratchHoverRef.current, HOVER_MIX);
+    }
 
-    inner.color.set(baseColor).multiplyScalar(dimMultiplier);
-    inner.emissiveIntensity = 1.4 * ownDisplayed;
+    outer.color.copy(color);
+    inner.color.copy(color);
+
+    inner.emissive.copy(innerEmissiveColor);
+    inner.emissiveIntensity = 1.6 * ownDisplayed;
+
+    const targetLabelOpacity =
+      fadeIn * fadeForCombine * (isHovered || isActive ? 1 : 0.65);
+
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      targetLabelOpacity,
+      6,
+      delta,
+    );
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
@@ -253,32 +287,41 @@ export const FragmentMesh = ({
     >
       <FractureBurst
         shardId={shard.id}
-        color="#ff9a4a"
+        color={shard.color ?? "#ff9a4a"}
         glowColor="#ffb86b"
         maxIntensity={8}
         maxDistance={6}
       />
+      <EntityLabel
+        name={shard.name}
+        opacityRef={labelOpacityRef}
+        offset={[0, 0.85, 0]}
+        size="0.72rem"
+        color={shard.color ?? "#f4f6ff"}
+      />
       <meshStandardMaterial
         ref={outerMaterialRef}
         attach="material-0"
-        color={OUTER_BASE_COLOR}
-        roughness={0.25}
-        metalness={0.5}
+        color={NEUTRAL_BASE_COLOR}
+        roughness={0.3}
+        metalness={0.45}
         flatShading
         side={THREE.DoubleSide}
+        depthWrite
       />
 
       <meshStandardMaterial
         ref={innerMaterialRef}
         attach="material-1"
-        color={OUTER_BASE_COLOR}
-        emissive={INNER_EMISSIVE_COLOR}
+        color={NEUTRAL_BASE_COLOR}
+        emissive={NEUTRAL_INNER_EMISSIVE}
         emissiveIntensity={0}
         roughness={0.5}
         metalness={0.2}
         flatShading
         toneMapped={false}
         side={THREE.DoubleSide}
+        depthWrite
       />
     </mesh>
   );

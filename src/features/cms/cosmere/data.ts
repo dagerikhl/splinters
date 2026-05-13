@@ -13,6 +13,7 @@ const ADONALSIUM: IShard = {
   shape: { seed: 0 },
   lifecycle: ShardLifecycle.Splintered,
   citation: "https://coppermind.net/wiki/Adonalsium",
+  color: "#f6f0d8",
   splitsInto: [
     "honor",
     "cultivation",
@@ -51,6 +52,7 @@ const SHARDS: IShard[] = [
     planetarySystem: "Roshar",
     citation: "https://coppermind.net/wiki/Honor",
     combinesWith: { shardId: "odium", into: "Retribution" },
+    color: "#88a8d8",
     subSplinters: [
       {
         id: "stormfather",
@@ -97,6 +99,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Alive,
     planetarySystem: "Roshar",
     citation: "https://coppermind.net/wiki/Cultivation",
+    color: "#5aa86b",
     subSplinters: [
       {
         id: "nightwatcher",
@@ -124,6 +127,7 @@ const SHARDS: IShard[] = [
     planetarySystem: "Roshar (mobile)",
     citation: "https://coppermind.net/wiki/Odium",
     combinesWith: { shardId: "honor", into: "Retribution" },
+    color: "#d34a4a",
     events: [
       {
         tag: "T7",
@@ -167,6 +171,7 @@ const SHARDS: IShard[] = [
     planetarySystem: "Scadrial",
     citation: "https://coppermind.net/wiki/Preservation",
     combinesWith: { shardId: "ruin", into: "Harmony" },
+    color: "#e4ecf4",
     events: [
       {
         tag: "T3",
@@ -191,6 +196,7 @@ const SHARDS: IShard[] = [
     planetarySystem: "Scadrial",
     citation: "https://coppermind.net/wiki/Ruin",
     combinesWith: { shardId: "preservation", into: "Harmony" },
+    color: "#3a2a30",
     events: [
       {
         tag: "T3",
@@ -215,6 +221,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Splintered,
     planetarySystem: "Sel",
     citation: "https://coppermind.net/wiki/Devotion",
+    color: "#d05c98",
     subSplinters: [
       {
         id: "seons",
@@ -255,6 +262,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Splintered,
     planetarySystem: "Sel",
     citation: "https://coppermind.net/wiki/Dominion",
+    color: "#3a78c8",
     subSplinters: [
       {
         id: "skaze",
@@ -295,6 +303,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Splintered,
     planetarySystem: "Threnodite system (originally)",
     citation: "https://coppermind.net/wiki/Ambition",
+    color: "#7560b8",
     subSplinters: [
       {
         id: "the-evil",
@@ -328,6 +337,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Alive,
     planetarySystem: "Taldain (and avatars cosmere-wide)",
     citation: "https://coppermind.net/wiki/Autonomy",
+    color: "#e9b35a",
     subSplinters: [
       {
         id: "trell",
@@ -354,6 +364,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Alive,
     planetarySystem: "Nalthis",
     citation: "https://coppermind.net/wiki/Endowment",
+    color: "#d63a6a",
     subSplinters: [
       {
         id: "returned",
@@ -371,6 +382,7 @@ const SHARDS: IShard[] = [
     shape: { seed: 11 },
     lifecycle: ShardLifecycle.Alive,
     citation: "https://coppermind.net/wiki/Mercy",
+    color: "#a8a0c8",
     events: [
       {
         tag: "T8",
@@ -388,6 +400,7 @@ const SHARDS: IShard[] = [
     vessel: { name: "Medelantorius", species: "dragon" },
     lifecycle: ShardLifecycle.Alive,
     citation: "https://coppermind.net/wiki/Valor",
+    color: "#c8a26a",
     events: [],
   },
   {
@@ -397,6 +410,7 @@ const SHARDS: IShard[] = [
     vessel: { name: "Chan Ko Sar" },
     lifecycle: ShardLifecycle.Alive,
     citation: "https://coppermind.net/wiki/Invention",
+    color: "#5ac0c8",
     events: [],
   },
   {
@@ -405,6 +419,7 @@ const SHARDS: IShard[] = [
     shape: { seed: 14 },
     lifecycle: ShardLifecycle.Alive,
     citation: "https://coppermind.net/wiki/Whimsy",
+    color: "#c870c0",
     events: [],
   },
   {
@@ -414,6 +429,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Unknown,
     citation: "https://coppermind.net/wiki/Letters",
     events: [],
+    color: "#7a8090",
   },
   {
     id: "unknown2",
@@ -422,6 +438,7 @@ const SHARDS: IShard[] = [
     lifecycle: ShardLifecycle.Unknown,
     citation: "https://coppermind.net/wiki/Letters",
     events: [],
+    color: "#7a8090",
   },
 ];
 

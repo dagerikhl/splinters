@@ -39,7 +39,14 @@ export const useSplintersStore = create<SplintersStore>((set) => ({
   resetManualSplinters: () => set({ manualSplinters: {} }),
 
   time: 0,
-  setTime: (time) => set({ time }),
+  setTime: (time) =>
+    set((current) => ({
+      time,
+      manualSplinters:
+        Object.keys(current.manualSplinters).length > 0
+          ? {}
+          : current.manualSplinters,
+    })),
 
   isPlaying: false,
   setIsPlaying: (isPlaying) => set({ isPlaying }),

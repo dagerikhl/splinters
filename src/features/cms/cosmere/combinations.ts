@@ -7,6 +7,9 @@ export interface IShardCombination {
   emissiveColor: string;
 }
 
+export const findCombination = (id: string): IShardCombination | undefined =>
+  COMBINATIONS.find((c) => c.id === id);
+
 export const COMBINATIONS: IShardCombination[] = [
   {
     id: "harmony",

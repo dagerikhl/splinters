@@ -75,18 +75,36 @@ const main = async () => {
   page.on("pageerror", (err) =>
     console.error(`[page error] ${err.message}\n${err.stack ?? ""}`),
   );
+  page.on("requestfailed", (req) =>
+    console.error(`[request fail] ${req.url()} ${req.failure()?.errorText}`),
+  );
   page.on("console", (msg) => {
-    if (msg.type() === "error" || msg.type() === "warning") {
-      console.error(`[page ${msg.type()}] ${msg.text()}`);
+    const type = msg.type();
+    if (type === "error" || type === "log") {
+      console.error(`[page ${type}] ${msg.text()}`);
     }
   });
 
   log(`Navigating to ${BASE_URL}...`);
-  await page.goto(BASE_URL, { waitUntil: "networkidle" });
+  await page.goto(BASE_URL, { waitUntil: "domcontentloaded" });
 
   log("Waiting for canvas...");
   await page.waitForSelector("canvas", { timeout: 30000 });
-  await wait(1500);
+  await wait(6000);
+
+  const canvasInfo = await page.evaluate(() => {
+    const c = document.querySelector("canvas");
+    if (!c) return { found: false };
+    const rect = c.getBoundingClientRect();
+    return {
+      found: true,
+      width: c.width,
+      height: c.height,
+      rectW: rect.width,
+      rectH: rect.height,
+    };
+  });
+  log(`canvas info: ${JSON.stringify(canvasInfo)}`);
 
   const shoot = async (name) => {
     const path = resolve(OUT_DIR, `${name}.png`);

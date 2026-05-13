@@ -1,7 +1,14 @@
 :root {
-  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+  --font-display:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
 
   --space-xx-small: 0.125rem;
   --space-x-small: 0.25rem;
@@ -12,13 +19,13 @@
   --space-xx-large: 3rem;
 
   --border-rad: 4px;
-
-  // Differs by color scheme
+  --border-rad-large: 10px;
 
   --color-pri: #222222;
   --color-sec: #000000;
   --color-ter: #ffffff;
   --color-accent: #0075c7;
+  --color-accent-soft: #4fa3da;
 
   --bkg-color-pri: #ebf0f3;
   --bkg-color-sec: #dfe4e7;
@@ -27,21 +34,27 @@
   --border-color-pri: rgba(50, 50, 50, 25%);
   --border-color-sec: rgba(50, 50, 50, 35%);
   --border-color-ter: rgba(50, 50, 50, 50%);
+
+  --shadow-glow:
+    0 0 0 1px rgba(120, 160, 220, 0.18), 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-pri: #e8e8e8;
-    --color-sec: #ffffff;
-    --color-ter: #e1e6ea;
-    --color-accent: #77b4e3;
+    --color-pri: #e6ecf2;
+    --color-sec: #f5f7fb;
+    --color-ter: #c4cdd8;
+    --color-accent: #8cc0ee;
+    --color-accent-soft: #a6cdef;
+    --color-mute: #889ab0;
 
-    --bkg-color-pri: #1f1f1f;
-    --bkg-color-sec: #3a3d3f;
-    --bkg-color-ter: #153d57;
+    --bkg-color-pri: #0b0f17;
+    --bkg-color-sec: #131822;
+    --bkg-color-ter: #1a2230;
 
-    --border-color-pri: rgba(150, 150, 150, 25%);
-    --border-color-sec: rgba(150, 150, 150, 35%);
-    --border-color-ter: rgba(150, 150, 150, 50%);
+    --border-color-pri: rgba(180, 200, 230, 18%);
+    --border-color-sec: rgba(180, 200, 230, 30%);
+    --border-color-ter: rgba(180, 200, 230, 45%);
   }
 }
 
@@ -75,7 +88,18 @@ body {
   grid-template-columns: auto;
   grid-template-rows: 60px calc(100vh - 60px - 18px);
   color: var(--color-pri);
-  background: var(--bkg-color-pri);
+  background:
+    radial-gradient(
+      ellipse at top,
+      rgba(40, 60, 110, 0.18),
+      rgba(5, 7, 13, 0) 70%
+    ),
+    var(--bkg-color-pri);
+  font-family: var(--font-sans);
+  font-feature-settings:
+    "ss01" 1,
+    "cv11" 1;
+  -webkit-font-smoothing: antialiased;
   overflow-x: scroll;
 }
 

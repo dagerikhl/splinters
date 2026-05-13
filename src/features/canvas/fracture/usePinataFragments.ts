@@ -58,11 +58,16 @@ export const usePinataFragments = ({
     const restPositions = fibonacciSphere(fragmentCount, restRadius);
 
     const fragments: FragmentData[] = fragmentMeshes.map((fragment, index) => {
-      fragment.geometry.computeBoundingBox();
-      fragment.geometry.computeBoundingSphere();
+      const geo = fragment.geometry;
+
+      // Ensure normals are present and consistent; flatShading uses screen-space
+      // derivatives so we don't need to expand to non-indexed geometry.
+      geo.computeVertexNormals();
+      geo.computeBoundingBox();
+      geo.computeBoundingSphere();
 
       return {
-        geometry: fragment.geometry,
+        geometry: geo,
         homePosition: new THREE.Vector3(0, 0, 0),
         restPosition: restPositions[index] ?? new THREE.Vector3(),
       };

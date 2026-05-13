@@ -1,5 +1,6 @@
 "use client";
 
+import { EntityLabel } from "@/features/canvas/components/EntityLabel";
 import { COSMERE_DATA } from "@/features/cms/cosmere/data";
 import { IAether } from "@/features/cms/cosmere/types";
 import { SplinterCategory } from "@/features/splinters/enums/SplinterCategory";
@@ -16,6 +17,7 @@ const AetherOrb = ({ aether, index }: { aether: IAether; index: number }) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const phaseRef = useRef(index * 1.7);
   const scratchScaleRef = useRef(new THREE.Vector3());
+  const labelOpacityRef = useRef(0.6);
   const [isHovered, setIsHovered] = useState(false);
 
   const target = useMemo(
@@ -29,7 +31,7 @@ const AetherOrb = ({ aether, index }: { aether: IAether; index: number }) => {
 
   useCursor(isHovered);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const mesh = meshRef.current;
 
     if (!mesh) return;
@@ -50,6 +52,13 @@ const AetherOrb = ({ aether, index }: { aether: IAether; index: number }) => {
     const s = isActive || isHovered ? 1.4 : 1;
 
     mesh.scale.copy(scratchScaleRef.current.set(s, s, s));
+
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      isHovered || isActive ? 1 : 0.5,
+      6,
+      delta,
+    );
   });
 
   const handleClick = (event: ThreeEvent<MouseEvent>) => {
@@ -79,6 +88,13 @@ const AetherOrb = ({ aether, index }: { aether: IAether; index: number }) => {
         emissive={aether.color}
         emissiveIntensity={1.6}
         toneMapped={false}
+      />
+      <EntityLabel
+        name={aether.name}
+        opacityRef={labelOpacityRef}
+        offset={[0, 0.5, 0]}
+        size="0.62rem"
+        color={aether.color}
       />
     </mesh>
   );

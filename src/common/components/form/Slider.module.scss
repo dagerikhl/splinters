@@ -1,7 +1,94 @@
 .slider {
-  &:not(:disabled) {
-    &:hover {
-      cursor: pointer;
-    }
+  --thumb-size: 18px;
+  --track-height: 6px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  width: 100%;
+  height: var(--thumb-size);
+
+  &:not(:disabled):hover {
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: var(--track-height);
+    background: linear-gradient(
+      90deg,
+      rgba(140, 192, 238, 0.85) 0%,
+      rgba(70, 110, 180, 0.6) 100%
+    );
+    border-radius: 999px;
+    border: 1px solid rgba(180, 200, 230, 0.18);
+    box-shadow: var(--shadow-inset);
+  }
+
+  &::-moz-range-track {
+    height: var(--track-height);
+    background: linear-gradient(
+      90deg,
+      rgba(140, 192, 238, 0.85) 0%,
+      rgba(70, 110, 180, 0.6) 100%
+    );
+    border-radius: 999px;
+    border: 1px solid rgba(180, 200, 230, 0.18);
+    box-shadow: var(--shadow-inset);
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    background: radial-gradient(
+      circle at 35% 30%,
+      #ffffff 0%,
+      #c8e0ff 70%,
+      #6c9fcf 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    box-shadow:
+      0 0 12px rgba(140, 192, 238, 0.55),
+      0 2px 4px rgba(0, 0, 0, 0.4);
+    margin-top: calc((var(--thumb-size) - var(--track-height)) / -2);
+    transition: transform 120ms ease;
+  }
+
+  &::-moz-range-thumb {
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    background: radial-gradient(
+      circle at 35% 30%,
+      #ffffff 0%,
+      #c8e0ff 70%,
+      #6c9fcf 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    box-shadow:
+      0 0 12px rgba(140, 192, 238, 0.55),
+      0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: transform 120ms ease;
+  }
+
+  &:hover::-webkit-slider-thumb,
+  &:hover::-moz-range-thumb {
+    transform: scale(1.12);
+    box-shadow:
+      0 0 18px rgba(140, 192, 238, 0.75),
+      0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  &:focus-visible::-webkit-slider-thumb,
+  &:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 3px rgba(140, 192, 238, 0.35),
+      0 0 18px rgba(140, 192, 238, 0.75);
   }
 }

@@ -1,8 +1,29 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-x-small);
+  gap: var(--space-small);
   width: 100%;
+  padding: var(--space-medium) var(--space-large);
+  background: linear-gradient(
+    180deg,
+    rgba(20, 30, 48, 0.4),
+    rgba(10, 14, 24, 0.6)
+  );
+  border: 1px solid var(--border-color-pri);
+  border-radius: var(--border-rad-large);
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(10px);
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-x-small);
+  justify-content: center;
+}
+
+.playButton {
+  min-width: 56px;
+  font-size: 1em;
 }
 
 .sliderWrap {
@@ -10,7 +31,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 0 6px;
+  padding: 12px 6px 0;
 }
 
 .sliderWrap > input {
@@ -31,53 +52,67 @@
 
 .tick {
   position: absolute;
-  top: -7px;
-  width: 3px;
-  height: 14px;
-  background: rgba(180, 200, 230, 0.55);
-  border-radius: 1px;
+  top: -10px;
+  width: 2px;
+  height: 16px;
+  background: rgba(180, 200, 230, 0.5);
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
   transform: translateX(-50%);
   pointer-events: auto;
   cursor: pointer;
-  transition: background 120ms ease;
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    height 140ms ease;
 
   &:hover {
     background: #ffd28a;
+    height: 22px;
+    top: -13px;
+    box-shadow: 0 0 8px rgba(255, 210, 138, 0.7);
   }
 }
 
 .tickActive {
   background: #ffd28a;
-  box-shadow: 0 0 6px #ffd28a;
-}
-
-.controls {
-  display: flex;
-  gap: var(--space-xx-small);
-  justify-content: center;
-}
-
-.playButton {
-  min-width: 44px;
+  box-shadow: 0 0 10px rgba(255, 210, 138, 0.85);
+  height: 22px;
+  top: -13px;
 }
 
 .label {
   text-align: center;
-  font-size: 0.85em;
-  color: var(--color-text-mute, #aab);
+  font-size: 0.85rem;
+  color: var(--color-mute, #889ab0);
   min-height: 1.4em;
 }
 
 .eventLink {
-  color: var(--color-accent, #ffc9c9);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-x-small);
+  color: #ffe2af;
   text-decoration: none;
+  padding: 2px 10px;
+  border: 1px solid rgba(255, 210, 138, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 210, 138, 0.08);
+  transition:
+    background 140ms ease,
+    border-color 140ms ease;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    background: rgba(255, 210, 138, 0.18);
+    border-color: rgba(255, 210, 138, 0.5);
   }
 }
 
 .scrubbing {
-  color: var(--color-text-mute, #aab);
+  color: var(--color-mute, #889ab0);
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
 }
