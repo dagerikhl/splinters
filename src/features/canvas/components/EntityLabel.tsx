@@ -40,6 +40,7 @@ export const EntityLabel = ({
 }: EntityLabelProps) => {
   const elRef = useRef<HTMLDivElement | null>(null);
   const displayedRef = useRef(0);
+  const lastWrittenRef = useRef(-1);
   const initializedRef = useRef(false);
 
   const readableColor = useMemo(() => ensureReadable(color), [color]);
@@ -65,11 +66,18 @@ export const EntityLabel = ({
 
     const o = displayedRef.current;
 
+    // Only write to DOM when the change is perceptually visible. Damping
+    // never quite settles, so without this every label issues a style mutation
+    // every frame.
+    if (Math.abs(o - lastWrittenRef.current) < 0.01) return;
+
+    lastWrittenRef.current = o;
+
     if (o < 0.01) {
       el.style.opacity = "0";
       el.style.visibility = "hidden";
     } else {
-      el.style.opacity = String(o);
+      el.style.opacity = o.toFixed(2);
       el.style.visibility = "visible";
     }
   });

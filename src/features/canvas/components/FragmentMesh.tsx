@@ -1,7 +1,6 @@
 "use client";
 
 import { EntityLabel } from "@/features/canvas/components/EntityLabel";
-import { FractureBurst } from "@/features/canvas/components/FractureBurst";
 import { FragmentData } from "@/features/canvas/fracture/usePinataFragments";
 import { IShard } from "@/features/cms/cosmere/types";
 import { getSplinterStateAt } from "@/features/splinters/derive/getSplinterStateAt";
@@ -278,13 +277,6 @@ export const FragmentMesh = ({
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
     >
-      <FractureBurst
-        shardId={shard.id}
-        color={shard.color ?? "#ff9a4a"}
-        glowColor="#ffb86b"
-        maxIntensity={8}
-        maxDistance={6}
-      />
       <EntityLabel
         name={shard.name}
         opacityRef={labelOpacityRef}
