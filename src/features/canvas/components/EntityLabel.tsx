@@ -39,7 +39,8 @@ export const EntityLabel = ({
   color = "#f4f6ff",
 }: EntityLabelProps) => {
   const elRef = useRef<HTMLDivElement | null>(null);
-  const displayedRef = useRef(1);
+  const displayedRef = useRef(0);
+  const initializedRef = useRef(false);
 
   const readableColor = useMemo(() => ensureReadable(color), [color]);
 
@@ -50,12 +51,17 @@ export const EntityLabel = ({
 
     const target = opacityRef ? opacityRef.current : 1;
 
-    displayedRef.current = THREE.MathUtils.damp(
-      displayedRef.current,
-      target,
-      6,
-      delta,
-    );
+    if (!initializedRef.current) {
+      displayedRef.current = target;
+      initializedRef.current = true;
+    } else {
+      displayedRef.current = THREE.MathUtils.damp(
+        displayedRef.current,
+        target,
+        6,
+        delta,
+      );
+    }
 
     const o = displayedRef.current;
 
@@ -79,7 +85,12 @@ export const EntityLabel = ({
       <div
         ref={elRef}
         className={styles.label}
-        style={{ color: readableColor, fontSize: size }}
+        style={{
+          color: readableColor,
+          fontSize: size,
+          opacity: 0,
+          visibility: "hidden",
+        }}
       >
         {name}
       </div>
