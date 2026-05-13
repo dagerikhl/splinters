@@ -102,7 +102,9 @@ export const TIMELINE_EVENTS: ITimelineEvent[] = [
   },
 ];
 
-const MAX_ORDINAL = TIMELINE_EVENTS[TIMELINE_EVENTS.length - 1].ordinal;
+// Slot count reserves a half-window of headroom at both ends so the first and
+// last events have a complete smoothFade ramp inside [0, 1].
+const SLOT_COUNT = TIMELINE_EVENTS[TIMELINE_EVENTS.length - 1].ordinal + 1;
 const TAG_INDEX: Record<string, ITimelineEvent> = Object.fromEntries(
   TIMELINE_EVENTS.map((e) => [e.tag, e]),
 );
@@ -114,7 +116,7 @@ export const tagToTime = (tag: string): number => {
     throw new Error(`Unknown timeline tag: ${tag}`);
   }
 
-  return event.ordinal / MAX_ORDINAL;
+  return (event.ordinal + 0.5) / SLOT_COUNT;
 };
 
 export const TIMELINE_FADE_WINDOW = 0.04;

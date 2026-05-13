@@ -1,4 +1,5 @@
 import { buildOctahedron } from "@/features/canvas/fracture/buildOctahedron";
+import { orientOutward } from "@/features/canvas/fracture/orientOutward";
 import { fibonacciSphere } from "@/features/canvas/fracture/restPositions";
 import { generateVoronoiSeeds } from "@/features/canvas/fracture/voronoiSeeds";
 import { DestructibleMesh, FractureOptions } from "@dgreenheck/three-pinata";
@@ -60,9 +61,9 @@ export const usePinataFragments = ({
     const fragments: FragmentData[] = fragmentMeshes.map((fragment, index) => {
       const geo = fragment.geometry;
 
-      // Ensure normals are present and consistent; flatShading uses screen-space
-      // derivatives so we don't need to expand to non-indexed geometry.
-      geo.computeVertexNormals();
+      // Force all triangles to face outward, so FrontSide-only rendering shows
+      // no holes and there are no see-through back-faces.
+      orientOutward(geo);
       geo.computeBoundingBox();
       geo.computeBoundingSphere();
 

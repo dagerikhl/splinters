@@ -11,6 +11,7 @@
   flex-direction: column;
   gap: var(--space-medium);
   padding: var(--space-medium);
+  z-index: 50;
   pointer-events: none;
 
   > * {

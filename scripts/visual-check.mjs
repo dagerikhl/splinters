@@ -96,15 +96,102 @@ const main = async () => {
     const c = document.querySelector("canvas");
     if (!c) return { found: false };
     const rect = c.getBoundingClientRect();
+    const tl = document.querySelector(
+      '[class*="TimelineController-module-scss"]',
+    );
+    const tlRect = tl?.getBoundingClientRect();
     return {
       found: true,
       width: c.width,
       height: c.height,
       rectW: rect.width,
       rectH: rect.height,
+      timeline: tlRect
+        ? { x: tlRect.x, y: tlRect.y, w: tlRect.width, h: tlRect.height }
+        : null,
     };
   });
   log(`canvas info: ${JSON.stringify(canvasInfo)}`);
+
+  const tlStyle = await page.evaluate(() => {
+    const tl = document.querySelector(
+      '[class*="TimelineController-module-scss"]',
+    );
+    if (!tl) return null;
+    const cs = getComputedStyle(tl);
+    return {
+      visibility: cs.visibility,
+      display: cs.display,
+      opacity: cs.opacity,
+      zIndex: cs.zIndex,
+      bg: cs.backgroundColor,
+      bgImg: cs.backgroundImage.slice(0, 80),
+    };
+  });
+  log(`timeline style: ${JSON.stringify(tlStyle)}`);
+
+  const htmls = await page.evaluate(() => {
+    const all = Array.from(document.querySelectorAll("div"));
+    return all
+      .filter((el) => {
+        const cs = getComputedStyle(el);
+        if (cs.position !== "absolute") return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 200 && r.height > 200;
+      })
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        return {
+          cls: el.className.toString().slice(0, 60),
+          x: r.x,
+          y: r.y,
+          w: r.width,
+          h: r.height,
+          zi: getComputedStyle(el).zIndex,
+        };
+      });
+  });
+  log(`large absolute overlays: ${JSON.stringify(htmls)}`);
+
+  const labelStyle = await page.evaluate(() => {
+    const labels = Array.from(document.querySelectorAll('[class*="EntityLabel"]'));
+    if (!labels.length) return null;
+    const el = labels[0];
+    const cs = getComputedStyle(el);
+    return {
+      count: labels.length,
+      bg: cs.backgroundColor,
+      bgImg: cs.backgroundImage.slice(0, 60),
+      border: cs.border,
+      padding: cs.padding,
+      cls: el.className.toString(),
+      txt: el.textContent?.slice(0, 30),
+    };
+  });
+  log(`label style: ${JSON.stringify(labelStyle)}`);
+
+  // Capture all label outer wrappers (drei Html portals) and their computed style
+  const labelWrappers = await page.evaluate(() => {
+    const labels = Array.from(
+      document.querySelectorAll('[class*="EntityLabel"]'),
+    );
+    return labels.slice(0, 3).map((el) => {
+      const outer = el.parentElement?.parentElement;
+      if (!outer) return null;
+      const cs = getComputedStyle(outer);
+      const r = outer.getBoundingClientRect();
+      return {
+        bg: cs.backgroundColor,
+        bgImg: cs.backgroundImage.slice(0, 60),
+        border: cs.border,
+        x: r.x,
+        y: r.y,
+        w: r.width,
+        h: r.height,
+      };
+    });
+  });
+  log(`label wrappers: ${JSON.stringify(labelWrappers)}`);
 
   const shoot = async (name) => {
     const path = resolve(OUT_DIR, `${name}.png`);

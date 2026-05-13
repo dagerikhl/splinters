@@ -6,9 +6,11 @@ import {
 import { describe, expect, it } from "vitest";
 
 describe("tagToTime", () => {
-  it("normalizes pre-T0 to 0 and the last event to 1", () => {
-    expect(tagToTime("pre-T0")).toBe(0);
-    expect(tagToTime("T20")).toBe(1);
+  it("places pre-T0 near 0 and the last event near 1 with fade headroom", () => {
+    expect(tagToTime("pre-T0")).toBeGreaterThan(0);
+    expect(tagToTime("pre-T0")).toBeLessThan(0.1);
+    expect(tagToTime("T20")).toBeGreaterThan(0.9);
+    expect(tagToTime("T20")).toBeLessThan(1);
   });
 
   it("places intermediate events monotonically between 0 and 1", () => {

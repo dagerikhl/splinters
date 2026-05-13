@@ -79,11 +79,22 @@ export const CombinedShard = ({
       delta,
     );
 
+    // Snap to zero when the target is zero and we've decayed close to it,
+    // otherwise the damp asymptote leaves a sliver of the combined shard
+    // visible after a reset.
+    if (target === 0 && displayedProgressRef.current < 0.04) {
+      displayedProgressRef.current = 0;
+    }
+
     const p = displayedProgressRef.current;
 
-    mesh.visible = p > 0.02;
+    mesh.visible = p > 0.04;
 
-    if (!mesh.visible) return;
+    if (!mesh.visible) {
+      labelOpacityRef.current = 0;
+
+      return;
+    }
 
     mesh.position.copy(midpoint);
 

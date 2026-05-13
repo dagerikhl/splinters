@@ -2,9 +2,23 @@
 
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { MutableRefObject, useRef } from "react";
+import { MutableRefObject, useMemo, useRef } from "react";
 import * as THREE from "three";
 import styles from "./EntityLabel.module.scss";
+
+const MIN_LUMINANCE = 0.45;
+
+const ensureReadable = (color: string): string => {
+  const c = new THREE.Color(color);
+  const luminance = c.r * 0.299 + c.g * 0.587 + c.b * 0.114;
+
+  if (luminance >= MIN_LUMINANCE) return color;
+
+  const mix = (MIN_LUMINANCE - luminance) / Math.max(1 - luminance, 0.01);
+  const lifted = c.clone().lerp(new THREE.Color(1, 1, 1), mix);
+
+  return `#${lifted.getHexString()}`;
+};
 
 export interface EntityLabelProps {
   name: string;
@@ -26,6 +40,8 @@ export const EntityLabel = ({
 }: EntityLabelProps) => {
   const elRef = useRef<HTMLDivElement | null>(null);
   const displayedRef = useRef(1);
+
+  const readableColor = useMemo(() => ensureReadable(color), [color]);
 
   useFrame((_state, delta) => {
     const el = elRef.current;
@@ -63,7 +79,7 @@ export const EntityLabel = ({
       <div
         ref={elRef}
         className={styles.label}
-        style={{ color, fontSize: size }}
+        style={{ color: readableColor, fontSize: size }}
       >
         {name}
       </div>
